@@ -315,7 +315,7 @@ textarea{font-family:var(--mono)!important;font-size:12px;line-height:1.6;resize
 <!-- ═══ VIEWS ═══ -->
 
 <!-- LANDING -->
-<div class="view" id="view-landing">
+<div class="view active" id="view-landing">
   <div class="landing-hero">
     <div class="hero-badge">⚡ FREE PLAN AVAILABLE · NO CREDIT CARD</div>
     <h1 class="hero-title">Security Architecture<br><span>Review, Automated.</span></h1>
@@ -1433,3 +1433,27 @@ function renderRoadmap() {
 }
 
 // ── BOOT ───────────────────────────────────────────────────────
+// Show landing immediately so page is never blank
+document.addEventListener('DOMContentLoaded', () => {
+  showView('landing');
+  document.getElementById('header-guest').classList.remove('hide');
+});
+
+// Then check if user is already logged in
+(async () => {
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session?.user) {
+      currentUser = session.user;
+      await loadProfile();
+      updateHeaderAuth(true);
+      showView('dashboard');
+    }
+  } catch(e) {
+    console.error('Boot error:', e);
+    showView('landing');
+  }
+})();
+</script>
+</body>
+</html>
