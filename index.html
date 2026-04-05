@@ -306,8 +306,8 @@ textarea{font-family:var(--mono)!important;font-size:12px;line-height:1.6;resize
       </div>
     </div>
     <div id="header-guest">
-      <button class="btn btn-ghost btn-sm" onclick="showView('auth')">Sign In</button>
-      <button class="btn btn-gold btn-sm" onclick="showView('auth')">Get Started Free</button>
+      <button class="btn btn-ghost btn-sm" onclick="showView('auth');switchAuthTab('login')">Sign In</button>
+      <button class="btn btn-gold btn-sm" onclick="showView('auth');switchAuthTab('signup')">Get Started Free</button>
     </div>
   </div>
 </header>
@@ -321,7 +321,7 @@ textarea{font-family:var(--mono)!important;font-size:12px;line-height:1.6;resize
     <h1 class="hero-title">Security Architecture<br><span>Review, Automated.</span></h1>
     <p class="hero-sub">Paste your HLD + LLD → get a full STRIDE, PASTA, attack surface &amp; compliance gap report in seconds. Built for Security Architects.</p>
     <div class="hero-btns">
-      <button class="btn btn-gold" style="font-size:15px;padding:13px 32px" onclick="showView('auth')">Start Free Review →</button>
+      <button class="btn btn-gold" style="font-size:15px;padding:13px 32px" onclick="showView('auth');switchAuthTab('signup')">Start Free Review →</button>
       <button class="btn btn-ghost" style="font-size:15px;padding:13px 28px" onclick="tryDemo()">⚡ Try Demo</button>
     </div>
   </div>
@@ -606,16 +606,20 @@ sb.auth.onAuthStateChange(async (event, session) => {
     currentUser = session.user;
     await loadProfile();
     updateHeaderAuth(true);
-    if (['SIGNED_IN','TOKEN_REFRESHED'].includes(event)) {
-      if (!window.location.hash || window.location.hash === '#auth') {
-        showView('dashboard');
-      }
+    // Only auto-navigate on actual sign in events, not on page load
+    if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+      showView('dashboard');
     }
   } else {
     currentUser = null;
     currentProfile = null;
     updateHeaderAuth(false);
-    showView('landing');
+    // Only redirect to landing if user was on a protected page
+    const protectedViews = ['dashboard','analyze','report'];
+    const current = document.querySelector('.view.active')?.id?.replace('view-','');
+    if (protectedViews.includes(current)) {
+      showView('landing');
+    }
   }
 });
 
@@ -688,8 +692,17 @@ async function signUp() {
 }
 
 async function signInGoogle() {
-  await sb.auth.signInWithOAuth({ provider: 'google',
-    options: { redirectTo: window.location.origin } });
+  try {
+    const { error } = await sb.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: window.location.origin }
+    });
+    if (error) {
+      showAuthError('Google sign-in is not configured yet. Please use Email & Password below.');
+    }
+  } catch(e) {
+    showAuthError('Google sign-in is not configured yet. Please use Email & Password below.');
+  }
 }
 
 async function signOut() {
@@ -708,8 +721,10 @@ document.addEventListener('click', e => {
 // ── VIEW ROUTER ────────────────────────────────────────────────
 function showView(name) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.getElementById('view-' + name).classList.add('active');
-  window.location.hash = name;
+  const target = document.getElementById('view-' + name);
+  if (!target) return;
+  target.classList.add('active');
+  window.scrollTo(0, 0);
   if (name === 'dashboard') loadDashboard();
   if (name === 'analyze') initAnalyzer();
 }
@@ -1436,7 +1451,6 @@ function renderRoadmap() {
 // Show landing immediately so page is never blank
 document.addEventListener('DOMContentLoaded', () => {
   showView('landing');
-  document.getElementById('header-guest').classList.remove('hide');
 });
 
 // Then check if user is already logged in
@@ -1449,9 +1463,10 @@ document.addEventListener('DOMContentLoaded', () => {
       updateHeaderAuth(true);
       showView('dashboard');
     }
+    // If no session, landing is already showing — do nothing
   } catch(e) {
     console.error('Boot error:', e);
-    showView('landing');
+    // Landing already showing, just log error
   }
 })();
 </script>
