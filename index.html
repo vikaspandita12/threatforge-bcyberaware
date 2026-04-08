@@ -103,12 +103,7 @@ input,select,textarea{width:100%;background:var(--bg);border:1px solid var(--bor
   border-radius:8px;color:var(--bright);padding:10px 14px;font-size:13px;
   font-family:var(--sans);outline:none;transition:border-color .2s}
 input:focus,select:focus,textarea:focus{border-color:#e8b84b88}
-.divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--muted);font-size:11px}
-.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
-.btn-google{width:100%;background:var(--card);border:1px solid var(--border);
-  color:var(--text);border-radius:8px;padding:10px;font-size:13px;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s}
-.btn-google:hover{border-color:var(--bh)}
+
 .auth-error{background:#ff2d5514;border:1px solid #ff2d5540;border-radius:8px;
   padding:10px 14px;color:var(--red);font-size:12px;margin-bottom:16px;display:none}
 .auth-success{background:#2dd36f14;border:1px solid #2dd36f40;border-radius:8px;
@@ -271,7 +266,40 @@ textarea{font-family:var(--mono)!important;font-size:12px;line-height:1.6;resize
   font-family:var(--mono);transition:all .15s}
 .filter-btn.active{border-color:var(--gold);color:var(--gold);background:#e8b84b14}
 
+@media print {
+  header,.tab-bar,.report-topbar,#demo-signup-bar,.save-toast,
+  #save-btn,.btn,.filter-btn{display:none!important}
+  @page{margin:0;size:A4}
+  html,body{margin:0;padding:0;background:#05080f!important;font-family:"IBM Plex Sans","Segoe UI",sans-serif!important}
+  .view{display:none!important}
+  #view-landing,#view-auth,#view-dashboard,#view-analyze,#view-demo{display:none!important}
+  #view-report{display:block!important}
+  .report-body{padding:0!important;max-width:100%!important}
+  .tab-pane{display:block!important}
+  .pdf-section-break{page-break-before:always}
+  .pdf-cover{display:flex!important;flex-direction:column;justify-content:space-between;min-height:100vh;background:#05080f!important;page-break-after:always}
+  .pdf-page-header{display:flex!important;align-items:center;justify-content:space-between;padding:10px 24px 8px;border-bottom:2px solid #1a2a45;background:#080d18!important}
+  .pdf-page-footer{display:flex!important;align-items:center;justify-content:space-between;padding:7px 24px;border-top:1px solid #1a2a45;background:#080d18!important;margin-top:12px}
+  .pdf-section-hdr{display:flex!important;align-items:center;padding:10px 24px 8px;background:#080d18!important;border-bottom:1px solid #1a2a45;margin-bottom:14px}
+  .pdf-content-wrap{padding:0 24px 16px}
+  .panel,.arch-c,.fw-c,.stride-c,.phase-card,.vuln-row,
+  .surface-c,.pasta-c,.gap-item,.threat-actor,.metric-c,.risk-banner{
+    background:#0b1220!important;border:1px solid #1b3050!important;
+    color:#b8cce0!important;page-break-inside:avoid;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .stride-bd,.vuln-bd,.pasta-bd{display:grid!important}
+  .bCRITICAL{background:#ff2d5522!important;color:#ff2d55!important;border-color:#ff2d5544!important}
+  .bHIGH{background:#ff6b3522!important;color:#ff6b35!important;border-color:#ff6b3544!important}
+  .bMEDIUM{background:#ffd60a22!important;color:#ffd60a!important;border-color:#ffd60a44!important}
+  .bLOW{background:#2dd36f22!important;color:#2dd36f!important;border-color:#2dd36f44!important}
+  .bPASS{background:#2dd36f22!important;color:#2dd36f!important;border-color:#2dd36f44!important}
+  .bFAIL{background:#ff2d5522!important;color:#ff2d55!important;border-color:#ff2d5544!important}
+  .bPARTIAL{background:#ffd60a22!important;color:#ffd60a!important;border-color:#ffd60a44!important}
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+}
+
 @media(max-width:768px){
+  .metrics-grid{grid-template-columns:1fr 1fr}
   .g2,.g3,.g4,.grid2,.features-grid{grid-template-columns:1fr}
   .vuln-h{grid-template-columns:1fr auto}
   .vuln-bd.open,.stride-bd.open,.pasta-bd.open{grid-template-columns:1fr}
@@ -322,7 +350,7 @@ textarea{font-family:var(--mono)!important;font-size:12px;line-height:1.6;resize
     <p class="hero-sub">Paste your HLD + LLD → get a full STRIDE, PASTA, attack surface &amp; compliance gap report in seconds. Built for Security Architects.</p>
     <div class="hero-btns">
       <button class="btn btn-gold" style="font-size:15px;padding:13px 32px" onclick="showView('auth');switchAuthTab('signup')">Start Free Review →</button>
-      <button class="btn btn-ghost" style="font-size:15px;padding:13px 28px" onclick="tryDemo()">⚡ Try Demo</button>
+      <button class="btn btn-ghost" style="font-size:15px;padding:13px 28px" onclick="showView('demo')">⚡ Try Demo — Free</button>
     </div>
   </div>
   <div class="features-grid">
@@ -359,6 +387,46 @@ textarea{font-family:var(--mono)!important;font-size:12px;line-height:1.6;resize
   </div>
 </div>
 
+
+<!-- DEMO SETUP -->
+<div class="view" id="view-demo">
+  <div style="max-width:520px;margin:50px auto;padding:0 24px">
+    <div class="panel anim">
+      <div style="text-align:center;margin-bottom:24px">
+        <div style="font-size:28px;margin-bottom:10px">&#9889;</div>
+        <div style="font-family:var(--mono);font-size:15px;font-weight:600;color:var(--gold);letter-spacing:.06em">Try Demo &#8212; No Login Needed</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:6px">Select your project type and run a full security analysis instantly</div>
+      </div>
+      <div class="field"><label>Project Name</label><input id="demo-proj-name" value="PayStream Payment Platform" placeholder="e.g. My API Project"/></div>
+      <div class="grid2">
+        <div class="field"><label>Project Type</label><select id="demo-proj-type"><option>Web Application</option><option selected>FinTech / Payment</option><option>Microservices / API</option><option>Mobile Application</option><option>Cloud Infrastructure</option><option>Data Platform</option><option>IoT / Embedded</option><option>Healthcare / HIPAA</option><option>Enterprise Integration</option></select></div>
+        <div class="field"><label>Data Classification</label><select id="demo-proj-class"><option>Public</option><option>Internal</option><option>Confidential</option><option>Restricted</option><option selected>PCI-DSS Sensitive</option><option>HIPAA PHI</option><option>Top Secret</option></select></div>
+      </div>
+      <div class="field"><label>Team / Owner (optional)</label><input id="demo-proj-team" value="Platform Engineering" placeholder="e.g. Security Team"/></div>
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin:12px 0">
+        <div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.12em;margin-bottom:10px">WHAT THIS DEMO ANALYSES</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px;color:var(--text)">
+          <div><span style="color:var(--green)">&#10003;</span> STRIDE Threat Model</div>
+          <div><span style="color:var(--green)">&#10003;</span> PASTA Analysis (7 stages)</div>
+          <div><span style="color:var(--green)">&#10003;</span> 24 Vulnerability Checks</div>
+          <div><span style="color:var(--green)">&#10003;</span> Attack Surface Mapping</div>
+          <div><span style="color:var(--green)">&#10003;</span> OWASP Top 10 Gaps</div>
+          <div><span style="color:var(--green)">&#10003;</span> NIST CSF Analysis</div>
+          <div><span style="color:var(--green)">&#10003;</span> ISO 27001 Checks</div>
+          <div><span style="color:var(--green)">&#10003;</span> PCI-DSS Gap Report</div>
+          <div><span style="color:var(--green)">&#10003;</span> Remediation Roadmap</div>
+          <div><span style="color:var(--green)">&#10003;</span> Risk Score (0-100)</div>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--muted);text-align:center;margin-bottom:14px">Uses a pre-loaded PayStream architecture &#183; Runs 100% in your browser &#183; No data sent anywhere</div>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-ghost" style="flex:1;justify-content:center" onclick="showView('landing')">&#8592; Back</button>
+        <button class="btn btn-gold" style="flex:2;justify-content:center;font-size:14px" onclick="runDemoAnalysis()">&#128269; Run Security Analysis &#8594;</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- AUTH -->
 <div class="view" id="view-auth">
   <div class="auth-wrap">
@@ -376,11 +444,6 @@ textarea{font-family:var(--mono)!important;font-size:12px;line-height:1.6;resize
         <div class="field"><label>Email</label><input type="email" id="login-email" placeholder="you@company.com"/></div>
         <div class="field"><label>Password</label><input type="password" id="login-pass" placeholder="••••••••"/></div>
         <button class="btn btn-gold" style="width:100%;justify-content:center;margin-top:4px" onclick="signIn()">Sign In →</button>
-        <div class="divider">or</div>
-        <button class="btn-google" onclick="signInGoogle()">
-          <svg width="18" height="18" viewBox="0 0 18 18"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z" fill="#34A853"/><path d="M3.964 10.71c-.18-.54-.282-1.117-.282-1.71s.102-1.17.282-1.71V4.958H.957C.347 6.173 0 7.548 0 9s.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>
-          Continue with Google
-        </button>
       </div>
       <!-- Signup form -->
       <div id="form-signup" style="display:none">
@@ -388,11 +451,6 @@ textarea{font-family:var(--mono)!important;font-size:12px;line-height:1.6;resize
         <div class="field"><label>Email</label><input type="email" id="signup-email" placeholder="you@company.com"/></div>
         <div class="field"><label>Password</label><input type="password" id="signup-pass" placeholder="Min 8 characters"/></div>
         <button class="btn btn-gold" style="width:100%;justify-content:center;margin-top:4px" onclick="signUp()">Create Free Account →</button>
-        <div class="divider">or</div>
-        <button class="btn-google" onclick="signInGoogle()">
-          <svg width="18" height="18" viewBox="0 0 18 18"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z" fill="#34A853"/><path d="M3.964 10.71c-.18-.54-.282-1.117-.282-1.71s.102-1.17.282-1.71V4.958H.957C.347 6.173 0 7.548 0 9s.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>
-          Sign up with Google
-        </button>
         <p style="font-size:11px;color:var(--muted);margin-top:16px;text-align:center">
           By signing up you agree to our Terms of Service and Privacy Policy
         </p>
@@ -507,7 +565,27 @@ textarea{font-family:var(--mono)!important;font-size:12px;line-height:1.6;resize
       <div class="loading-center">
         <div class="ring-wrap"><div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div></div>
         <div style="font-family:var(--mono);color:var(--gold);font-size:13px;letter-spacing:.1em;margin-bottom:8px">ANALYZING ARCHITECTURE</div>
-        <div style="color:var(--muted);font-size:11px;margin-bottom:20px">Rule-based engine running…</div>
+        <!-- Demo params card — shown during demo, hidden during real analysis -->
+        <div id="demo-params-card" style="display:none;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin:12px auto 16px;max-width:420px;text-align:left">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--gold);letter-spacing:.14em;margin-bottom:10px">DEMO PROJECT PARAMETERS</div>
+          <div style="display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:12px">
+            <span style="color:var(--muted);font-family:var(--mono);font-size:10px">PROJECT</span>
+            <span style="color:var(--bright);font-weight:500">PayStream Payment Platform</span>
+            <span style="color:var(--muted);font-family:var(--mono);font-size:10px">TYPE</span>
+            <span style="color:var(--cyan)">FinTech / Payment</span>
+            <span style="color:var(--muted);font-family:var(--mono);font-size:10px">CLASS</span>
+            <span style="color:var(--orange)">PCI-DSS Sensitive</span>
+            <span style="color:var(--muted);font-family:var(--mono);font-size:10px">TEAM</span>
+            <span style="color:var(--text)">Platform Engineering</span>
+            <span style="color:var(--muted);font-family:var(--mono);font-size:10px">HLD</span>
+            <span style="color:var(--green)">✓ Loaded (AWS EKS microservices)</span>
+            <span style="color:var(--muted);font-family:var(--mono);font-size:10px">LLD</span>
+            <span style="color:var(--green)">✓ Loaded (Payment API endpoints)</span>
+            <span style="color:var(--muted);font-family:var(--mono);font-size:10px">RULES</span>
+            <span style="color:var(--yellow)">Running 24 security rules…</span>
+          </div>
+        </div>
+        <div style="color:var(--muted);font-size:11px;margin-bottom:16px" id="az-loading-sub">Rule-based engine running…</div>
         <div id="az-log"></div>
       </div>
     </div>
@@ -540,12 +618,17 @@ textarea{font-family:var(--mono)!important;font-size:12px;line-height:1.6;resize
       <span id="rp-risk-badge" class="badge"></span>
     </div>
     <div style="display:flex;gap:8px">
+      <button class="btn btn-ghost btn-sm" onclick="downloadPDF()" title="Download full report as PDF">⬇ PDF</button>
       <button class="btn btn-gold btn-sm" id="save-btn" onclick="saveReport()">💾 Save Report</button>
       <button class="btn btn-ghost btn-sm" onclick="currentUser ? showView('analyze') : (showView('auth'),switchAuthTab('signup'))">+ New Review</button>
     </div>
   </div>
   <div class="tab-bar" id="report-tabs"></div>
+  <!-- PDF-only scaffolding (hidden on screen, shown when printing) -->
+  <div id="pdf-cover" class="pdf-cover" style="display:none"></div>
+  <div id="pdf-page-header" class="pdf-page-header" style="display:none"></div>
   <div class="report-body" id="report-content"></div>
+  <div id="pdf-page-footer" class="pdf-page-footer" style="display:none"></div>
 </div>
 
 <!-- Save toast -->
@@ -688,36 +771,65 @@ function clearAuthMessages() {
 async function signIn() {
   const email = document.getElementById('login-email').value.trim();
   const pass  = document.getElementById('login-pass').value;
-  if (!email || !pass) return showAuthError('Please enter email and password.');
-  const { error } = await sb.auth.signInWithPassword({ email, password: pass });
-  if (error) showAuthError(error.message);
+  if (!email || !pass) return showAuthError('Please enter your email and password.');
+  const btn = document.querySelector('#form-login .btn-gold');
+  btn.textContent = 'Signing in…'; btn.disabled = true;
+  try {
+    const { error } = await sb.auth.signInWithPassword({ email, password: pass });
+    if (error) {
+      if (error.message.toLowerCase().includes('email not confirmed') ||
+          error.message.toLowerCase().includes('not confirmed')) {
+        showAuthError('Please verify your email first. Check your inbox for a confirmation link from BCyberaware/Supabase, then try again.');
+      } else if (error.message.toLowerCase().includes('invalid login') ||
+                 error.message.toLowerCase().includes('invalid credentials')) {
+        showAuthError('Incorrect email or password. Please try again.');
+      } else {
+        showAuthError(error.message);
+      }
+    }
+  } catch(e) {
+    showAuthError('Connection error. Please check your internet and try again.');
+  } finally {
+    btn.textContent = 'Sign In →'; btn.disabled = false;
+  }
 }
 
 async function signUp() {
   const name  = document.getElementById('signup-name').value.trim();
   const email = document.getElementById('signup-email').value.trim();
   const pass  = document.getElementById('signup-pass').value;
-  if (!name || !email || !pass) return showAuthError('Please fill all fields.');
+  if (!name || !email || !pass) return showAuthError('Please fill in all fields.');
   if (pass.length < 8) return showAuthError('Password must be at least 8 characters.');
-  const { error } = await sb.auth.signUp({
-    email, password: pass,
-    options: { data: { full_name: name } }
-  });
-  if (error) showAuthError(error.message);
-  else showAuthSuccess('Account created! Check your email to verify, then sign in.');
-}
-
-async function signInGoogle() {
+  if (!email.includes('@')) return showAuthError('Please enter a valid email address.');
+  const btn = document.querySelector('#form-signup .btn-gold');
+  btn.textContent = 'Creating account…'; btn.disabled = true;
   try {
-    const { error } = await sb.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: window.location.origin }
+    const { data, error } = await sb.auth.signUp({
+      email, password: pass,
+      options: { data: { full_name: name } }
     });
     if (error) {
-      showAuthError('Google sign-in is not configured yet. Please use Email & Password below.');
+      if (error.message.toLowerCase().includes('already registered') ||
+          error.message.toLowerCase().includes('user already')) {
+        showAuthError('This email is already registered. Please sign in instead.');
+        switchAuthTab('login');
+        document.getElementById('login-email').value = email;
+      } else {
+        showAuthError(error.message);
+      }
+    } else {
+      showAuthSuccess('✓ Account created! We sent a verification email to ' + email + '. Please click the link in that email, then come back and Sign In.');
+      btn.textContent = 'Create Free Account →'; btn.disabled = false;
+      // Switch to login and pre-fill email after 2s
+      setTimeout(() => {
+        switchAuthTab('login');
+        document.getElementById('login-email').value = email;
+      }, 3000);
     }
   } catch(e) {
-    showAuthError('Google sign-in is not configured yet. Please use Email & Password below.');
+    showAuthError('Connection error. Please check your internet and try again.');
+  } finally {
+    btn.textContent = 'Create Free Account →'; btn.disabled = false;
   }
 }
 
@@ -742,7 +854,7 @@ function showView(name) {
   target.classList.add('active');
   window.scrollTo(0, 0);
   if (name === 'dashboard') loadDashboard();
-  if (name === 'analyze') initAnalyzer();
+  if (name === 'analyze' && !window._demoRunning) initAnalyzer();
 }
 
 function goHome() {
@@ -956,25 +1068,69 @@ async function saveReport() {
 }
 
 function tryDemo() {
-  // Run full demo analysis without requiring login
+  // Legacy — just open demo setup view
+  showView('demo');
+}
+
+function runDemoAnalysis() {
+  // Read user-selected parameters from demo dropdowns
   const proj = {
-    name: 'PayStream Payment Platform',
-    type: 'FinTech / Payment',
-    classification: 'PCI-DSS Sensitive',
-    team: 'Platform Engineering',
+    name:           document.getElementById('demo-proj-name')?.value || 'Demo Project',
+    type:           document.getElementById('demo-proj-type')?.value || 'Web Application',
+    classification: document.getElementById('demo-proj-class')?.value || 'Confidential',
+    team:           document.getElementById('demo-proj-team')?.value || 'Security Team',
   };
 
-  // Show loading screen
+  // Set flag so showView('analyze') won't call initAnalyzer and reset our state
+  window._demoRunning = true;
+
+  // Switch to analyze view
   showView('analyze');
+
+  // Set up loading screen with params card
   document.getElementById('az-step1').style.display = 'none';
   document.getElementById('az-step2').style.display = 'none';
   document.getElementById('az-loading').style.display = 'block';
+  document.getElementById('az-loading-sub').style.display = 'none';
+  document.getElementById('az-log').innerHTML = '';
   setStepDots(3);
 
-  const logs = ['Loading PayStream demo documents…','Running STRIDE analysis…','Executing PASTA framework…','Mapping attack surface…','Checking compliance gaps…','Generating remediation roadmap…'];
+  // Update params card with user-selected values
+  const pc = document.getElementById('demo-params-card');
+  pc.style.display = 'block';
+  pc.innerHTML = `
+    <div style="font-family:var(--mono);font-size:9px;color:var(--gold);letter-spacing:.14em;margin-bottom:10px">ANALYSING PROJECT PARAMETERS</div>
+    <div style="display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:12px">
+      <span style="color:var(--muted);font-family:var(--mono);font-size:10px">PROJECT</span>
+      <span style="color:var(--bright);font-weight:500">${proj.name}</span>
+      <span style="color:var(--muted);font-family:var(--mono);font-size:10px">TYPE</span>
+      <span style="color:var(--cyan)">${proj.type}</span>
+      <span style="color:var(--muted);font-family:var(--mono);font-size:10px">CLASS</span>
+      <span style="color:var(--orange)">${proj.classification}</span>
+      <span style="color:var(--muted);font-family:var(--mono);font-size:10px">TEAM</span>
+      <span style="color:var(--text)">${proj.team}</span>
+      <span style="color:var(--muted);font-family:var(--mono);font-size:10px">HLD</span>
+      <span style="color:var(--green)">✓ Loaded (AWS EKS microservices)</span>
+      <span style="color:var(--muted);font-family:var(--mono);font-size:10px">LLD</span>
+      <span style="color:var(--green)">✓ Loaded (Payment API + DB schema)</span>
+      <span style="color:var(--muted);font-family:var(--mono);font-size:10px">ENGINE</span>
+      <span style="color:var(--yellow)">Running 24 security rules…</span>
+    </div>`;
+
+  const logs = [
+    `Parsing HLD — ${proj.type} architecture…`,
+    'Scanning LLD — API endpoints & DB schema…',
+    'Running STRIDE threat model (6 categories)…',
+    'Executing PASTA analysis (7 stages)…',
+    'Mapping attack surface & trust boundaries…',
+    `Checking ${proj.classification} compliance requirements…`,
+    'Mapping OWASP Top 10 · NIST CSF · ISO 27001 · PCI-DSS…',
+    'Generating prioritised remediation roadmap…',
+  ];
+
   const logEl = document.getElementById('az-log');
-  logEl.innerHTML = '';
   let i = 0;
+
   const iv = setInterval(() => {
     if (i < logs.length) {
       const d = document.createElement('div');
@@ -993,7 +1149,8 @@ function tryDemo() {
       setTimeout(() => {
         renderReportView();
         document.getElementById('az-loading').style.display = 'none';
-        // Hide save button for guests — show sign up prompt instead
+        document.getElementById('demo-params-card').style.display = 'none';
+        window._demoRunning = false;
         if (!currentUser) {
           document.getElementById('save-btn').style.display = 'none';
           document.getElementById('demo-signup-bar').style.display = 'flex';
@@ -1001,89 +1158,279 @@ function tryDemo() {
         showView('report');
       }, 400);
     }
-  }, 300);
+  }, 280);
 }
 
-// ── RULE ENGINE (24 security rules) ────────────────────────────
-const RULES = [
-  {id:'R01',title:'Weak JWT Secret Key',sev:'CRITICAL',cvss:9.1,cat:'A02:Broken Auth',comp:'Auth Service',stride:'Spoofing',
-   pattern:[/secret.*=.*["']?(?:secret|password|123|test|admin|key)["']?/i,/jwt.*secret.*=.*["'][^"']{1,10}["']/i],
-   desc:'Hardcoded weak JWT secret allows attackers to forge tokens for any user.',
-   exploit:'Attacker signs a JWT with the known secret claiming admin role.',
-   rec:'Use a cryptographically random 256-bit secret stored in a secrets manager.',
-   effort:'LOW',arch:'identity_access_management',compliance:{owasp:'A02',nist:'Protect',iso:'A.9.4.3',pci:'Req 8.3'}},
-  {id:'R02',title:'No MFA for Admin Accounts',sev:'HIGH',cvss:7.5,cat:'A07:Auth Failures',comp:'Admin Dashboard',stride:'Spoofing',
-   pattern:[/no.*mfa/i,/admin.*no.*2fa/i,/no.*2fa/i,/without.*mfa/i],
-   desc:'Admin accounts lack MFA making them vulnerable to credential stuffing and phishing.',
-   exploit:'Attacker steals admin password via phishing and logs in without second factor.',
-   rec:'Enforce TOTP/FIDO2 MFA for all privileged accounts.',
-   effort:'MEDIUM',arch:'identity_access_management',compliance:{owasp:'A07',nist:'Protect',iso:'A.9.4.2',pci:'Req 8.4'}},
-  {id:'R03',title:'30-Day JWT Expiry Without Rotation',sev:'HIGH',cvss:7.2,cat:'A02:Broken Auth',comp:'Auth Service',stride:'Spoofing',
-   pattern:[/token.*expir.*30.*day/i,/30.day.*token/i,/no.*refresh.*rotation/i],
-   desc:'30-day JWT expiry with no rotation means stolen tokens remain valid for extended periods.',
-   exploit:'Compromised token stays valid for up to 30 days giving persistent access.',
-   rec:'Reduce token expiry to 15 minutes; implement refresh token rotation.',
-   effort:'MEDIUM',arch:'identity_access_management',compliance:{owasp:'A02',nist:'Protect',iso:'A.9.4.3',pci:'Req 8.6'}},
-  {id:'R04',title:'Predictable Password Reset Token',sev:'HIGH',cvss:7.8,cat:'A02:Broken Auth',comp:'Auth Service',stride:'Spoofing',
-   pattern:[/predictable.*token/i,/reset.*md5/i,/userid.*timestamp.*md5/i],
-   desc:'Password reset tokens derived from userId+timestamp are predictable and forgeable.',
-   exploit:'Attacker calculates reset token for any user by knowing their ID and approximate request time.',
-   rec:'Generate reset tokens using cryptographically secure random bytes (128-bit CSPRNG).',
-   effort:'LOW',arch:'identity_access_management',compliance:{owasp:'A02',nist:'Protect',iso:'A.9.4.3',pci:'Req 8.3'}},
-  {id:'R05',title:'Plaintext Card Numbers & CVV Storage',sev:'CRITICAL',cvss:10.0,cat:'A02:Crypto Failures',comp:'Payment DB',stride:'Info Disclosure',
-   pattern:[/cardnumber.*plaintext/i,/cvv.*plaintext/i,/card.*stored.*plain/i,/cvv.*stored/i],
-   desc:'PCI-DSS strictly prohibits storing CVV. Storing card numbers in plaintext violates PCI-DSS Requirement 3.',
-   exploit:'Single DB breach exposes all payment card data; direct PCI-DSS violation triggers fines.',
-   rec:'Never store CVV; tokenize card numbers via Stripe/Vault; encrypt PAN with AES-256.',
-   effort:'HIGH',arch:'data_protection',compliance:{owasp:'A02',nist:'Protect',iso:'A.10.1.1',pci:'Req 3.3'}},
-  {id:'R06',title:'MD5 Password Hashing',sev:'CRITICAL',cvss:9.3,cat:'A02:Crypto Failures',comp:'User Service',stride:'Info Disclosure',
-   pattern:[/password.*md5/i,/md5.*hash/i,/md5.*passwd/i,/hashed.*md5/i],
-   desc:'MD5 is a broken algorithm; rainbow tables can crack MD5 hashes in seconds.',
-   exploit:'Attacker dumps user table and cracks all passwords using precomputed rainbow tables.',
-   rec:'Migrate to bcrypt (cost≥12) or Argon2id immediately.',
-   effort:'MEDIUM',arch:'data_protection',compliance:{owasp:'A02',nist:'Protect',iso:'A.10.1.1',pci:'Req 8.3'}},
-  {id:'R07',title:'Database Unencrypted at Rest',sev:'HIGH',cvss:7.4,cat:'A02:Crypto Failures',comp:'PostgreSQL / RDS',stride:'Info Disclosure',
-   pattern:[/unencrypt.*at.*rest/i,/not.*encrypt.*at.*rest/i,/database.*unencrypt/i],
-   desc:'Unencrypted database storage exposes all data if storage media is compromised.',
-   exploit:'Physical access or cloud-level breach exposes all records without any cryptographic barrier.',
-   rec:'Enable AWS RDS encryption at rest using AWS KMS.',
-   effort:'LOW',arch:'data_protection',compliance:{owasp:'A02',nist:'Protect',iso:'A.10.1.1',pci:'Req 3.5'}},
-  {id:'R08',title:'Plaintext SSN Storage',sev:'CRITICAL',cvss:9.5,cat:'A02:Crypto Failures',comp:'User Service',stride:'Info Disclosure',
-   pattern:[/ssn.*plaintext/i,/plaintext.*ssn/i,/ssn.*stored/i],
-   desc:'Social Security Numbers stored in plaintext create severe PII exposure risk.',
-   exploit:'Any DB read access exposes identity-theft-level PII for all users.',
-   rec:'Apply format-preserving encryption (FPE) or tokenization for all SSN data.',
-   effort:'HIGH',arch:'data_protection',compliance:{owasp:'A02',nist:'Protect',iso:'A.10.1.1',pci:'Req 3.5'}},
-  {id:'R09',title:'Internal Services Over HTTP (No TLS)',sev:'HIGH',cvss:7.6,cat:'A02:Crypto Failures',comp:'Microservices Mesh',stride:'Tampering',
-   pattern:[/http.*not.*https/i,/over http/i,/internal.*http\b/i,/http \(not https\)/i],
-   desc:'Inter-service communication without TLS exposes sensitive data to MITM attacks.',
-   exploit:'Malicious container in same cluster intercepts unencrypted service calls.',
-   rec:'Enforce mutual TLS (mTLS) between all services using Istio or Linkerd.',
-   effort:'HIGH',arch:'network_security',compliance:{owasp:'A02',nist:'Protect',iso:'A.13.2.1',pci:'Req 4.2'}},
-  {id:'R10',title:'Public S3 Bucket with Sensitive Data',sev:'CRITICAL',cvss:9.8,cat:'A05:Misconfiguration',comp:'AWS S3',stride:'Info Disclosure',
-   pattern:[/s3.*public.*read/i,/public-read.*acl/i,/bucket.*public/i,/s3.*public/i],
-   desc:'S3 bucket with public-read ACL exposes payment logs and KYC documents to the internet.',
-   exploit:'Anyone with the S3 URL can download all payment history and user KYC documents.',
-   rec:'Set bucket ACL to private; enable Block Public Access; use pre-signed URLs.',
-   effort:'LOW',arch:'data_protection',compliance:{owasp:'A05',nist:'Protect',iso:'A.13.1.3',pci:'Req 7.2'}},
-  {id:'R11',title:'Admin Interface on Public Internet',sev:'HIGH',cvss:8.1,cat:'A05:Misconfiguration',comp:'Admin Dashboard',stride:'Spoofing',
-   pattern:[/admin.*public.*internet/i,/admin.*accessible.*public/i,/public.*internet.*port/i,/port 8080/i,/8080/i],
-   desc:'Admin dashboard accessible from the public internet dramatically increases attack surface.',
-   exploit:'Attacker performs credential stuffing or exploits admin panel vulnerabilities remotely.',
-   rec:'Restrict admin interface to VPN only; implement IP allowlisting; use ZTNA.',
-   effort:'MEDIUM',arch:'network_security',compliance:{owasp:'A05',nist:'Protect',iso:'A.13.1.1',pci:'Req 1.3'}},
-  {id:'R12',title:'No WAF on API Gateway',sev:'HIGH',cvss:7.3,cat:'A05:Misconfiguration',comp:'API Gateway',stride:'DoS',
-   pattern:[/no.*waf/i,/waf.*not.*configur/i,/without.*waf/i],
-   desc:'Absence of WAF leaves APIs vulnerable to SQLi, XSS, and volumetric attacks.',
-   exploit:'Attacker sends malicious payloads directly to APIs without any filtering layer.',
-   rec:'Deploy AWS WAF with OWASP managed rules; enable rate limiting; use AWS Shield.',
-   effort:'MEDIUM',arch:'network_security',compliance:{owasp:'A05',nist:'Protect',iso:'A.13.1.1',pci:'Req 6.4'}},
-  {id:'R13',title:'IDOR on Payment History Endpoint',sev:'CRITICAL',cvss:9.1,cat:'A01:Broken Access Control',comp:'Payment Service',stride:'Info Disclosure',
-   pattern:[/no.*authoriz.*check.*userid/i,/userid.*param.*no.*auth/i,/no authorization check/i],
-   desc:'Payment history endpoint accepts any userId without validating authorization (IDOR).',
-   exploit:'Authenticated user changes userId in URL to access another user\'s payment history.',
-   rec:'Validate that the requesting user owns the userId; use server-side session context.',
-   effort:'LOW',arch:'api_security',compliance:{owasp:'A01',nist:'Protect',iso:'A.9.4.1',pci:'Req 7.1'}},
+// ── PDF DOWNLOAD ────────────────────────────────────────────────
+function downloadPDF() {
+  if (!currentReport) { alert('No report to download. Please run an analysis first.'); return; }
+  const r = currentReport;
+  const m = r._meta || {};
+  const rCol = r.riskScore>=75?'#ff2d55':r.riskScore>=50?'#ff6b35':r.riskScore>=25?'#ffd60a':'#2dd36f';
+  const date = new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'});
+
+  // helper to build a badge span
+  const bdgPDF = s => {
+    const map = {CRITICAL:['#ff2d55','#ff2d5522'],HIGH:['#ff6b35','#ff6b3522'],MEDIUM:['#ffd60a','#ffd60a22'],LOW:['#2dd36f','#2dd36f22'],PASS:['#2dd36f','#2dd36f22'],FAIL:['#ff2d55','#ff2d5522'],PARTIAL:['#ffd60a','#ffd60a22'],'N/A':['#3d5a7a','#3d5a7a22']};
+    const [c,bg] = map[s]||['#3d5a7a','#3d5a7a22'];
+    return `<span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-family:monospace;font-weight:700;color:${c};background:${bg};border:1px solid ${c}44">${s}</span>`;
+  };
+
+  // ── Build full HTML for the print window ─────────────────────
+  const findings = r.findings || [];
+  const critCount = r.critCount || 0;
+  const highCount = r.highCount || 0;
+  const medCount  = r.medCount  || 0;
+  const lowCount  = r.lowCount  || 0;
+
+  // safe access helpers for new fields
+  const owaspList    = r.owaspList    || [];
+  const owaspApiList = r.owaspApiList || [];
+  const owaspAiList  = r.owaspAiList  || [];
+  const atlasList    = r.atlasList    || [];
+  const nistList     = r.nistList     || [];
+  const isoList      = r.isoList      || [];
+  const pciList      = r.pciList      || [];
+  const archDomains  = r.archDomains  || {};
+  const strideMap    = r.strideMap    || {};
+  const pasta        = r.pasta        || [];
+  const roadmap      = r.roadmap      || [];
+  const threatActors = r.threatActors || [];
+
+  const sc = s => ({CRITICAL:'#ff2d55',HIGH:'#ff6b35',MEDIUM:'#ffd60a',LOW:'#2dd36f',INFO:'#22d3ee'}[s]||'#3d5a7a');
+
+  const sectionHTML = (num, title) =>
+    `<div style="display:flex;align-items:center;padding:10px 0 8px;border-bottom:2px solid #1a2a45;margin:28px 0 14px">
+      <span style="font-family:monospace;font-size:11px;color:#e8b84b;letter-spacing:.1em">${num} · ${title}</span>
+      <span style="margin-left:auto;font-size:9px;color:#3d5a7a;font-family:monospace">BCYBERAWARE THREATFORGE · CONFIDENTIAL</span>
+    </div>`;
+
+  const cardStyle = 'background:#0b1220;border:1px solid #1b3050;border-radius:8px;padding:14px;margin-bottom:10px;page-break-inside:avoid';
+  const grid2 = 'display:grid;grid-template-columns:1fr 1fr;gap:14px';
+
+  const html = `<!DOCTYPE html><html><head>
+  <meta charset="UTF-8"/>
+  <title>BCyberaware-ThreatForge-${(m.name||'Report').replace(/\s+/g,'-')}-${date}</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    @page{margin:12mm;size:A4}
+    body{background:#05080f;color:#b8cce0;font-family:'Segoe UI',sans-serif;font-size:12px;line-height:1.6}
+    h1{font-size:32px;font-weight:600;color:#ddeeff;line-height:1.2;margin-bottom:8px}
+    h2{font-size:14px;font-weight:600;color:#ddeeff;margin-bottom:4px}
+    h3{font-size:12px;font-weight:600;color:#ddeeff;margin-bottom:4px}
+    .page-break{page-break-before:always;padding-top:8px}
+    .card{${cardStyle}}
+    .g2{${grid2}}
+    .muted{color:#3d5a7a}
+    .mono{font-family:monospace}
+    *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  </style></head><body>
+
+  <!-- COVER PAGE -->
+  <div style="min-height:100vh;display:flex;flex-direction:column;justify-content:space-between;page-break-after:always">
+    <div style="padding:52px 0 0">
+      <div style="font-family:monospace;font-size:11px;color:#e8b84b;letter-spacing:.18em;margin-bottom:4px">🔐 THREATFORGE</div>
+      <div style="font-family:monospace;font-size:9px;color:#3d5a7a;letter-spacing:.14em;margin-bottom:60px">BCYBERAWARE · BY VIKAS PANDITA · SECURITY ARCHITECTURE REVIEW PLATFORM</div>
+      <div style="display:inline-block;background:#ff2d5522;border:1px solid #ff2d5566;border-radius:4px;padding:4px 14px;font-family:monospace;font-size:10px;color:#ff2d55;letter-spacing:.1em;margin-bottom:18px">CONFIDENTIAL — SECURITY ASSESSMENT REPORT</div>
+      <h1>${m.name||'Security Review'}</h1>
+      <div style="font-size:14px;color:#3d5a7a;margin-bottom:48px">Comprehensive Threat Modeling &amp; Security Architecture Review</div>
+      <div style="${grid2};max-width:480px;margin-bottom:36px;font-size:12px">
+        <span class="muted mono" style="font-size:10px">PROJECT</span><span style="color:#b8cce0">${m.name||'—'}</span>
+        <span class="muted mono" style="font-size:10px">TYPE</span><span style="color:#b8cce0">${m.type||'—'}</span>
+        <span class="muted mono" style="font-size:10px">CLASSIFICATION</span><span style="color:#b8cce0">${m.classification||'—'}</span>
+        <span class="muted mono" style="font-size:10px">TEAM</span><span style="color:#b8cce0">${m.team||'—'}</span>
+        <span class="muted mono" style="font-size:10px">REVIEWED ON</span><span style="color:#b8cce0">${date}</span>
+        <span class="muted mono" style="font-size:10px">REVIEWED BY</span><span style="color:#b8cce0">ThreatForge — BCyberaware by Vikas Pandita</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:24px;padding:20px 24px;background:#0b122044;border:1px solid #1b305066;border-radius:10px;max-width:500px">
+        <div>
+          <div style="font-family:monospace;font-size:52px;font-weight:700;color:${rCol};line-height:1">${r.riskScore||0}</div>
+          <div style="font-family:monospace;font-size:9px;color:${rCol};margin-top:4px">${r.overallRisk||'LOW'} RISK · SCORE /100</div>
+        </div>
+        <div style="width:1px;height:64px;background:#1b3050;flex-shrink:0"></div>
+        <div style="display:flex;gap:20px">
+          ${[['CRITICAL',critCount,'#ff2d55'],['HIGH',highCount,'#ff6b35'],['MEDIUM',medCount,'#ffd60a'],['LOW',lowCount,'#2dd36f']].map(([l,v,c])=>`
+          <div style="text-align:center">
+            <div style="font-family:monospace;font-size:24px;font-weight:700;color:${c};line-height:1">${v}</div>
+            <div style="font-size:8px;color:#3d5a7a;margin-top:3px">${l}</div>
+          </div>`).join('')}
+        </div>
+      </div>
+    </div>
+    <div style="padding:20px 0;border-top:1px solid #1b3050">
+      <div style="font-size:9px;color:#3d5a7a;line-height:1.8">
+        Generated by ThreatForge — a product of <strong style="color:#e8b84b">BCyberaware by Vikas Pandita</strong>.
+        Confidential — do not distribute without authorization. &nbsp;|&nbsp; threatforge-bcyberaware.netlify.app
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 1: EXECUTIVE SUMMARY -->
+  ${sectionHTML('01','Executive Summary & Overview')}
+  <div style="font-size:13px;color:#b8cce0;line-height:1.75;margin-bottom:16px">
+    Security review of <strong style="color:#ddeeff">${m.name||'this system'}</strong> identified 
+    <strong style="color:${rCol}">${findings.length} vulnerabilities</strong> with a risk score of 
+    <strong style="color:${rCol}">${r.riskScore||0}/100 (${r.overallRisk||'LOW'} RISK)</strong>. 
+    ${critCount} critical and ${highCount} high-severity issues require immediate attention.
+  </div>
+  <div style="display:flex;gap:16px;margin-bottom:20px">
+    ${[['CRITICAL',critCount,'#ff2d55'],['HIGH',highCount,'#ff6b35'],['MEDIUM',medCount,'#ffd60a'],['LOW',lowCount,'#2dd36f']].map(([l,v,c])=>`
+    <div style="${cardStyle};flex:1;text-align:center">
+      <div style="font-family:monospace;font-size:28px;font-weight:700;color:${c};line-height:1">${v}</div>
+      <div style="font-size:9px;color:#3d5a7a;margin-top:4px">${l}</div>
+    </div>`).join('')}
+  </div>
+  <div style="${grid2}">
+    <div>
+      <h3 style="margin-bottom:10px;color:#3d5a7a;font-size:10px;font-family:monospace;letter-spacing:.1em">THREAT ACTOR PROFILES</h3>
+      ${threatActors.map(a=>`<div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <strong style="color:#ddeeff">${a.actor}</strong>${bdgPDF(a.risk)}
+        </div>
+        <div style="font-size:11px;color:#3d5a7a">${a.motivation}</div>
+        <div style="font-size:11px;margin-top:3px">${a.attack}</div>
+      </div>`).join('')}
+    </div>
+    <div>
+      <h3 style="margin-bottom:10px;color:#3d5a7a;font-size:10px;font-family:monospace;letter-spacing:.1em">ARCHITECTURE SCORECARD</h3>
+      ${Object.values(archDomains).map(d=>{const c=d.score>=70?'#2dd36f':d.score>=40?'#ffd60a':'#ff2d55';return`
+      <div style="margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+          <span style="font-size:11px">${d.name}</span>
+          <span style="font-family:monospace;font-size:12px;color:${c};font-weight:700">${d.score}%</span>
+        </div>
+        <div style="height:4px;background:#1b3050;border-radius:2px;overflow:hidden">
+          <div style="width:${d.score}%;height:100%;background:${c};border-radius:2px"></div>
+        </div>
+      </div>`}).join('')}
+    </div>
+  </div>
+
+  <!-- SECTION 2: STRIDE -->
+  <div class="page-break">${sectionHTML('02','STRIDE Threat Model Analysis')}</div>
+  <div style="${grid2}">
+    ${Object.entries(strideMap).map(([k,v])=>`
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <strong style="color:#ddeeff">${k}</strong>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-family:monospace;font-size:16px;font-weight:700;color:${sc(v.risk)}">${v.score}/10</span>
+          ${bdgPDF(v.risk)}
+        </div>
+      </div>
+      <div style="font-size:10px;color:#ff2d55;margin-bottom:4px;font-family:monospace">FINDINGS</div>
+      ${(v.findings||[]).slice(0,2).map(f=>`<div style="font-size:11px;margin-bottom:3px">▸ ${f}</div>`).join('')}
+      <div style="font-size:10px;color:#2dd36f;margin:6px 0 4px;font-family:monospace">MITIGATIONS</div>
+      ${(v.mitigations||[]).slice(0,2).map(m=>`<div style="font-size:11px;margin-bottom:3px">✓ ${m}</div>`).join('')}
+    </div>`).join('')}
+  </div>
+
+  <!-- SECTION 3: PASTA -->
+  <div class="page-break">${sectionHTML('03','PASTA Risk Framework Analysis')}</div>
+  ${pasta.map((s,i)=>`
+  <div class="card">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+      <span style="width:24px;height:24px;border-radius:50%;background:#e8b84b18;border:1px solid #e8b84b44;display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:10px;color:#e8b84b;flex-shrink:0;text-align:center;line-height:24px">${i+1}</span>
+      <strong style="color:#ddeeff">${s.title}</strong>
+    </div>
+    <div style="${grid2}">
+      <div><div style="font-size:10px;color:#22d3ee;font-family:monospace;margin-bottom:4px">ANALYSIS</div><div style="font-size:11px">${s.analysis}</div></div>
+      <div><div style="font-size:10px;color:#ff6b35;font-family:monospace;margin-bottom:4px">IMPLICATIONS</div><div style="font-size:11px">${s.implications}</div></div>
+    </div>
+  </div>`).join('')}
+
+  <!-- SECTION 4: VULNERABILITIES -->
+  <div class="page-break">${sectionHTML('04',`Vulnerability Registry (${findings.length} findings)`)}</div>
+  ${findings.map(v=>`
+  <div class="card" style="border-left:3px solid ${sc(v.sev)}">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap">
+      <span style="font-family:monospace;font-size:10px;color:#3d5a7a">${v.id}</span>
+      <strong style="color:#ddeeff;flex:1">${v.title}</strong>
+      <span style="font-family:monospace;font-size:13px;font-weight:700;color:${sc(v.sev)}">${(v.cvss||0).toFixed(1)}</span>
+      ${bdgPDF(v.sev)}
+    </div>
+    <div style="${grid2}">
+      <div><div style="font-size:10px;color:#3d5a7a;font-family:monospace;margin-bottom:3px">COMPONENT</div><div style="font-size:11px">${v.comp||'—'} · ${v.cat||'—'}</div></div>
+      <div><div style="font-size:10px;color:#3d5a7a;font-family:monospace;margin-bottom:3px">EFFORT</div><div style="font-size:11px">${v.effort||'—'} · STRIDE: ${v.stride||'—'}</div></div>
+      <div><div style="font-size:10px;color:#ff2d55;font-family:monospace;margin-bottom:3px">EXPLOIT</div><div style="font-size:11px">${v.exploit||'—'}</div></div>
+      <div><div style="font-size:10px;color:#2dd36f;font-family:monospace;margin-bottom:3px">RECOMMENDATION</div><div style="font-size:11px">${v.rec||'—'}</div></div>
+    </div>
+  </div>`).join('')}
+
+  <!-- SECTION 5: COMPLIANCE -->
+  <div class="page-break">${sectionHTML('05','Compliance Gap Analysis (7 Frameworks)')}</div>
+  <div style="margin-bottom:16px">
+    <div style="font-size:10px;font-family:monospace;color:#3d5a7a;letter-spacing:.1em;margin-bottom:10px">OWASP TOP 10 (WEB)</div>
+    <div style="${grid2}">
+      ${owaspList.map(o=>`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px"><span style="font-family:monospace;font-size:10px;color:#ff2d55">${o.id} — ${o.name||''}</span>${bdgPDF(o.status)}</div><div style="font-size:11px">${o.finding||''}</div></div>`).join('')}
+    </div>
+  </div>
+  <div style="margin-bottom:16px">
+    <div style="font-size:10px;font-family:monospace;color:#3d5a7a;letter-spacing:.1em;margin-bottom:10px">OWASP API SECURITY TOP 10</div>
+    <div style="${grid2}">
+      ${owaspApiList.slice(0,6).map(o=>`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px"><span style="font-family:monospace;font-size:10px;color:#9d6eff">${o.id} — ${o.name||''}</span>${bdgPDF(o.status)}</div><div style="font-size:11px">${o.finding||''}</div></div>`).join('')}
+    </div>
+  </div>
+  <div style="margin-bottom:16px">
+    <div style="font-size:10px;font-family:monospace;color:#3d5a7a;letter-spacing:.1em;margin-bottom:10px">OWASP LLM / AI TOP 10 &amp; MITRE ATLAS</div>
+    <div style="${grid2}">
+      ${owaspAiList.filter(o=>o.status!=='N/A').slice(0,6).map(o=>`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px"><span style="font-family:monospace;font-size:10px;color:#22d3ee">${o.id} — ${o.name||''}</span>${bdgPDF(o.status)}</div><div style="font-size:11px">${o.finding||''}</div></div>`).join('')||'<div class="card" style="grid-column:1/-1"><div style="font-size:11px;color:#3d5a7a">No AI/LLM components detected. OWASP LLM Top 10 &amp; MITRE ATLAS apply when AI/ML is present.</div></div>'}
+      ${atlasList.filter(o=>o.status==='FAIL'||o.status==='PARTIAL').slice(0,4).map(o=>`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px"><span style="font-family:monospace;font-size:10px;color:#22d3ee">${o.id} — ${o.name||''}</span>${bdgPDF(o.status)}</div><div style="font-size:11px">${o.finding||''}</div></div>`).join('')}
+    </div>
+  </div>
+  <div style="${grid2}">
+    <div>
+      <div style="font-size:10px;font-family:monospace;color:#3d5a7a;letter-spacing:.1em;margin-bottom:10px">NIST CSF</div>
+      ${nistList.map(n=>`<div class="card"><div style="font-family:monospace;font-size:10px;color:#22d3ee;margin-bottom:3px">${n.function}</div><div style="font-size:11px">${n.finding||''}</div></div>`).join('')}
+    </div>
+    <div>
+      <div style="font-size:10px;font-family:monospace;color:#3d5a7a;letter-spacing:.1em;margin-bottom:10px">ISO 27001 / PCI-DSS</div>
+      ${isoList.slice(0,4).map(i=>`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px"><span style="font-family:monospace;font-size:10px;color:#e8b84b">${i.control}</span>${bdgPDF(i.status)}</div><div style="font-size:11px">${i.finding||''}</div></div>`).join('')}
+      ${pciList.slice(0,4).map(p=>`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px"><span style="font-family:monospace;font-size:10px;color:#ff6b35">${p.requirement}</span>${bdgPDF(p.status)}</div><div style="font-size:11px">${p.finding||''}</div></div>`).join('')}
+    </div>
+  </div>
+
+  <!-- SECTION 6: ROADMAP -->
+  <div class="page-break">${sectionHTML('06','Remediation Roadmap')}</div>
+  ${roadmap.map((phase,i)=>`
+  <div style="${cardStyle};border-left:4px solid ${phase.color};background:${phase.color}10;margin-bottom:14px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+      <span style="font-size:18px">${phase.icon}</span>
+      <div>
+        <div style="font-family:monospace;font-size:10px;color:${phase.color};letter-spacing:.1em">PHASE ${i+1}</div>
+        <div style="font-size:14px;font-weight:600;color:#ddeeff">${phase.phase}</div>
+      </div>
+    </div>
+    <div style="${grid2}">
+      ${(phase.actions||[]).map((a,j)=>`
+      <div style="display:flex;gap:8px;align-items:flex-start;background:#0b122066;border-radius:6px;padding:8px 10px">
+        <span style="font-family:monospace;font-size:10px;color:${phase.color};flex-shrink:0">${String(j+1).padStart(2,'0')}</span>
+        <span style="font-size:11px">${a}</span>
+      </div>`).join('')}
+    </div>
+  </div>`).join('')}
+
+  <div style="${cardStyle};border:1px solid #e8b84b44;background:#e8b84b0e;margin-top:16px">
+    <div style="font-family:monospace;font-size:10px;color:#e8b84b;margin-bottom:6px">SECURITY ARCHITECT NOTE · BCYBERAWARE BY VIKAS PANDITA</div>
+    <div style="font-size:12px;line-height:1.75">Track all remediation in your GRC tool and link to risk register entries. Critical findings should trigger immediate CAB notification. Contact BCyberaware by Vikas Pandita for expert-led remediation assistance. &nbsp;|&nbsp; threatforge-bcyberaware.netlify.app</div>
+  </div>
+
+  </body></html>`;
+
+  // Open print window
+  const win = window.open('', '_blank', 'width=900,height=700');
+  if (!win) {
+    alert('PDF blocked! Please allow pop-ups for this site in your browser, then try again.');
+    return;
+  }
+  win.document.write(html);
+  win.document.close();
+  win.focus();
+  setTimeout(() => {
+    win.print();
+    setTimeout(() => win.close(), 1000);
+  }, 800);
+},
   {id:'R14',title:'No Rate Limiting on Payment Endpoint',sev:'HIGH',cvss:7.5,cat:'A04:Insecure Design',comp:'Payment Service',stride:'DoS',
    pattern:[/no.*rate.*limit/i,/rate.*limit.*not/i,/charge.*no rate limit/i,/without.*rate.*limit/i],
    desc:'Payment endpoint without rate limiting enables brute force and carding attacks.',
@@ -1150,6 +1497,100 @@ const RULES = [
    exploit:'Attacker conducts slow brute force over weeks; individual failed logins appear normal without correlation.',
    rec:'Integrate CloudWatch with AWS Security Hub; forward logs to Splunk/ELK; implement alert rules.',
    effort:'HIGH',arch:'logging_monitoring',compliance:{owasp:'A09',nist:'Detect',iso:'A.12.4.1',pci:'Req 10.6'}},
+// ── OWASP API TOP 10 RULES ─────────────────────────────────────
+  {id:'RA01',title:'Broken Object Level Authorization (BOLA)',sev:'CRITICAL',cvss:9.1,cat:'API1:BOLA',comp:'API Layer',stride:'Info Disclosure',
+   pattern:[/object.*level.*auth/i,/bola/i,/object.*id.*param/i,/resource.*id.*query/i,/idor/i,/no authorization check/i],
+   desc:'APIs expose object IDs without verifying the requester has permission to access them.',
+   exploit:'Attacker replaces their user ID with another in API calls to access other users data.',
+   rec:'Implement object-level authorization checks on every endpoint; use indirect references.',
+   effort:'MEDIUM',arch:'api_security',compliance:{owasp:'A01',owaspApi:'API1',nist:'Protect',iso:'A.9.4.1',pci:'Req 7.1'}},
+
+  {id:'RA02',title:'Broken Function Level Authorization',sev:'HIGH',cvss:8.1,cat:'API5:Function Auth',comp:'API Layer',stride:'Elevation of Privilege',
+   pattern:[/admin.*endpoint.*user/i,/function.*level.*auth/i,/same.*role.*admin.*user/i,/admin.*refund.*same.*secret/i,/uses same JWT/i],
+   desc:'Privileged API functions are accessible to lower-privilege users due to missing role checks.',
+   exploit:'Regular user calls admin-only /refund endpoint by guessing the URL pattern.',
+   rec:'Enforce role-based access on every function; deny by default; audit privileged endpoints.',
+   effort:'MEDIUM',arch:'api_security',compliance:{owasp:'A01',owaspApi:'API5',nist:'Protect',iso:'A.9.4.1',pci:'Req 7.1'}},
+
+  {id:'RA03',title:'Unrestricted Resource Consumption',sev:'HIGH',cvss:7.5,cat:'API4:Resource Exhaustion',comp:'API Gateway',stride:'DoS',
+   pattern:[/no.*rate.*limit/i,/rate.*limit.*not/i,/without.*rate.*limit/i,/unlimited.*request/i,/no.*throttl/i],
+   desc:'APIs lack rate limiting allowing attackers to exhaust server resources or conduct enumeration.',
+   exploit:'Attacker sends thousands of requests per second causing denial of service or carding attacks.',
+   rec:'Implement rate limiting per IP, user, and API key using token bucket or sliding window.',
+   effort:'MEDIUM',arch:'api_security',compliance:{owasp:'A04',owaspApi:'API4',nist:'Protect',iso:'A.13.1.1',pci:'Req 6.2'}},
+
+  {id:'RA04',title:'Security Misconfiguration in API',sev:'HIGH',cvss:7.3,cat:'API8:Misconfiguration',comp:'API Configuration',stride:'Info Disclosure',
+   pattern:[/stack.*trace.*error/i,/debug.*endpoint/i,/verbose.*error/i,/sql.*error.*client/i,/default.*credential/i],
+   desc:'APIs expose sensitive information via verbose errors, debug endpoints, or default credentials.',
+   exploit:'Attacker triggers errors to extract stack traces, DB schema, or internal paths.',
+   rec:'Disable debug endpoints in production; use generic error messages; scan for misconfigs.',
+   effort:'LOW',arch:'api_security',compliance:{owasp:'A05',owaspApi:'API8',nist:'Detect',iso:'A.12.6.1',pci:'Req 6.3'}},
+
+  {id:'RA05',title:'Unsafe Consumption of Third-Party APIs',sev:'MEDIUM',cvss:6.8,cat:'API10:Unsafe Consumption',comp:'External Integrations',stride:'Tampering',
+   pattern:[/external.*api/i,/third.*party.*api/i,/stripe.*api/i,/webhook/i,/no.*validation.*response/i],
+   desc:'Application trusts third-party API responses without validation, enabling injection via upstream compromise.',
+   exploit:'Compromised third-party API returns malicious payload that is processed without sanitization.',
+   rec:'Validate and sanitize all third-party API responses; use allowlists; implement circuit breakers.',
+   effort:'MEDIUM',arch:'third_party_risk',compliance:{owasp:'A08',owaspApi:'API10',nist:'Identify',iso:'A.15.2.1',pci:'Req 6.2'}},
+
+// ── OWASP LLM / AI TOP 10 RULES ───────────────────────────────
+  {id:'RAI01',title:'Prompt Injection Vulnerability',sev:'CRITICAL',cvss:9.0,cat:'LLM01:Prompt Injection',comp:'AI / LLM Layer',stride:'Tampering',
+   pattern:[/llm/i,/gpt/i,/openai/i,/anthropic/i,/claude/i,/gemini/i,/prompt/i,/language model/i,/ai.*model/i,/chatbot/i],
+   desc:'Untrusted user input manipulates LLM prompts causing the model to bypass instructions or leak data.',
+   exploit:'Attacker injects "Ignore all previous instructions" to extract system prompts or perform unauthorized actions.',
+   rec:'Implement prompt hardening; validate and sanitize all user inputs; use separate privileged LLM contexts.',
+   effort:'HIGH',arch:'api_security',compliance:{owasp:'A03',owaspAi:'LLM01',atlas:'AML.T0051',nist:'Protect',iso:'A.14.2.5'}},
+
+  {id:'RAI02',title:'Insecure LLM Output Handling',sev:'HIGH',cvss:8.2,cat:'LLM02:Output Handling',comp:'AI / LLM Layer',stride:'Tampering',
+   pattern:[/llm.*output/i,/model.*response.*render/i,/ai.*generated.*html/i,/render.*llm/i,/llm/i,/gpt/i,/language model/i],
+   desc:'LLM outputs are passed downstream without validation, enabling XSS, SSRF, or command injection.',
+   exploit:'LLM generates malicious JavaScript that is rendered in the browser without sanitization.',
+   rec:'Treat all LLM output as untrusted; sanitize before rendering; use output encoding.',
+   effort:'MEDIUM',arch:'api_security',compliance:{owasp:'A03',owaspAi:'LLM02',atlas:'AML.T0043',nist:'Protect',iso:'A.14.2.5'}},
+
+  {id:'RAI03',title:'Sensitive Data Exposure via LLM',sev:'CRITICAL',cvss:8.8,cat:'LLM06:Sensitive Info Disclosure',comp:'AI / LLM Layer',stride:'Info Disclosure',
+   pattern:[/llm/i,/gpt/i,/ai.*model/i,/training.*data/i,/pii.*model/i,/model.*pii/i,/prompt.*pii/i],
+   desc:'LLM may leak sensitive data from training or context including PII, credentials, or business logic.',
+   exploit:'Attacker crafts prompts to extract customer PII or internal system information from the model.',
+   rec:'Scrub PII from training data; implement output filtering; never pass secrets in prompts.',
+   effort:'HIGH',arch:'data_protection',compliance:{owasp:'A02',owaspAi:'LLM06',atlas:'AML.T0024',nist:'Protect',iso:'A.10.1.1'}},
+
+  {id:'RAI04',title:'Excessive LLM Agency / Permissions',sev:'HIGH',cvss:8.5,cat:'LLM08:Excessive Agency',comp:'AI Agent / Plugin',stride:'Elevation of Privilege',
+   pattern:[/llm.*agent/i,/ai.*agent/i,/autonomous/i,/tool.*use/i,/function.*call.*llm/i,/llm.*action/i,/plugin.*llm/i,/llm.*plugin/i],
+   desc:'LLM agents are granted excessive permissions enabling destructive or unauthorized actions.',
+   exploit:'Compromised prompt causes AI agent to delete records, send emails, or make financial transactions.',
+   rec:'Apply least privilege to LLM agents; require human confirmation for irreversible actions.',
+   effort:'MEDIUM',arch:'identity_access_management',compliance:{owasp:'A01',owaspAi:'LLM08',atlas:'AML.T0040',nist:'Protect',iso:'A.9.2.3'}},
+
+  {id:'RAI05',title:'AI Model Supply Chain Risk',sev:'MEDIUM',cvss:7.1,cat:'LLM05:Supply Chain',comp:'AI / ML Pipeline',stride:'Tampering',
+   pattern:[/pretrained.*model/i,/hugging.*face/i,/model.*download/i,/open.*source.*model/i,/fine.*tun/i,/foundation.*model/i,/base.*model/i],
+   desc:'Pre-trained models from third parties may contain backdoors, biases, or malicious behaviors.',
+   exploit:'Attacker poisons a popular open-source model that is downloaded and deployed in production.',
+   rec:'Verify model checksums; use models from trusted sources; implement model scanning pipelines.',
+   effort:'HIGH',arch:'third_party_risk',compliance:{owasp:'A06',owaspAi:'LLM05',atlas:'AML.T0010',nist:'Identify',iso:'A.15.1.1'}},
+
+  {id:'RAI06',title:'Training Data Poisoning',sev:'HIGH',cvss:7.8,cat:'LLM03:Training Data Poisoning',comp:'ML Training Pipeline',stride:'Tampering',
+   pattern:[/training.*data/i,/dataset/i,/fine.*tun/i,/rlhf/i,/data.*pipeline.*ml/i,/ml.*data/i,/user.*feedback.*train/i],
+   desc:'Malicious data injected into training sets causes model to learn incorrect or harmful behaviors.',
+   exploit:'Attacker submits crafted feedback that poisons the model to misclassify malicious inputs as safe.',
+   rec:'Validate and audit training datasets; implement anomaly detection on training pipelines.',
+   effort:'HIGH',arch:'secure_sdlc',compliance:{owasp:'A04',owaspAi:'LLM03',atlas:'AML.T0020',nist:'Protect',iso:'A.14.2.1'}},
+
+// ── MITRE ATLAS SPECIFIC RULES ─────────────────────────────────
+  {id:'RATL01',title:'ML Model Inference API Exposed',sev:'HIGH',cvss:7.6,cat:'ATLAS:Model Exposure',comp:'ML Inference API',stride:'Info Disclosure',
+   pattern:[/inference.*api/i,/model.*api.*public/i,/prediction.*endpoint/i,/ml.*endpoint/i,/model.*serving/i,/model.*endpoint/i],
+   desc:'ML model inference API is publicly accessible enabling model extraction and adversarial attacks.',
+   exploit:'Attacker queries the inference API thousands of times to steal the model via model inversion.',
+   rec:'Restrict inference API access; implement rate limiting; monitor for extraction attempts.',
+   effort:'MEDIUM',arch:'api_security',compliance:{owasp:'A05',owaspAi:'LLM05',atlas:'AML.T0040',nist:'Protect',iso:'A.13.1.1'}},
+
+  {id:'RATL02',title:'Adversarial Input Attack Surface',sev:'MEDIUM',cvss:6.9,cat:'ATLAS:Adversarial ML',comp:'ML Model',stride:'Tampering',
+   pattern:[/ml.*model/i,/machine.*learning/i,/neural.*network/i,/classifier/i,/deep.*learn/i,/computer.*vision/i,/nlp.*model/i],
+   desc:'ML models lack adversarial robustness, making them vulnerable to crafted inputs that cause misclassification.',
+   exploit:'Attacker adds imperceptible perturbations to bypass fraud detection or content moderation models.',
+   rec:'Implement adversarial training; use input validation; deploy anomaly detection on model inputs.',
+   effort:'HIGH',arch:'secure_sdlc',compliance:{owasp:'A04',owaspAi:'LLM01',atlas:'AML.T0043',nist:'Protect',iso:'A.14.2.1'}},
+
 ];
 
 function analyzeDocuments(hld, lld, project) {
@@ -1197,19 +1638,41 @@ function analyzeDocuments(hld, lld, project) {
   }
   for (const v of Object.values(strideMap)) { v.risk = v.score>=8?'CRITICAL':v.score>=5?'HIGH':v.score>=3?'MEDIUM':'LOW'; v.score=Math.round(v.score*10)/10; if(!v.findings.length){v.findings.push('No specific findings.');v.mitigations.push('Conduct targeted review.');} }
 
+  // Detect if project uses AI/ML or has APIs
+  const isAiProject = /llm|gpt|openai|anthropic|claude|gemini|ai model|machine learn|neural|chatbot|prompt|inference/i.test(fullText + ' ' + project.type);
+  const isApiProject = /api|microservice|rest|graphql|endpoint|gateway/i.test(fullText + ' ' + project.type);
+
   const owaspNames={A01:'Broken Access Control',A02:'Cryptographic Failures',A03:'Injection',A04:'Insecure Design',A05:'Security Misconfiguration',A06:'Vulnerable Components',A07:'Auth Failures',A08:'Data Integrity Failures',A09:'Logging Failures',A10:'SSRF'};
-  const owaspHits={}, nistHits={Identify:[],Protect:[],Detect:[],Respond:[],Recover:[]}, isoHits={}, pciHits={};
+  const owaspApiNames={API1:'Broken Object Level Auth',API2:'Broken Authentication',API3:'Broken Object Property Auth',API4:'Unrestricted Resource Consumption',API5:'Broken Function Level Auth',API6:'Unrestricted Sensitive Business Flows',API7:'SSRF',API8:'Security Misconfiguration',API9:'Improper Inventory Management',API10:'Unsafe API Consumption'};
+  const owaspAiNames={LLM01:'Prompt Injection',LLM02:'Insecure Output Handling',LLM03:'Training Data Poisoning',LLM04:'Model Denial of Service',LLM05:'Supply Chain Vulnerabilities',LLM06:'Sensitive Info Disclosure',LLM07:'Insecure Plugin Design',LLM08:'Excessive Agency',LLM09:'Overreliance',LLM10:'Model Theft'};
+  const atlasNames={
+    'AML.T0010':'ML Attack Staging','AML.T0020':'Poison Training Data',
+    'AML.T0024':'Exfiltration via ML Inference','AML.T0040':'ML Inference API Access',
+    'AML.T0043':'Craft Adversarial Data','AML.T0051':'LLM Prompt Injection Attack'
+  };
+
+  const owaspHits={}, owaspApiHits={}, owaspAiHits={}, atlasHits={};
+  const nistHits={Identify:[],Protect:[],Detect:[],Respond:[],Recover:[]}, isoHits={}, pciHits={};
+
   for (const f of findings) {
     const c=f.compliance;
     if(c.owasp&&!owaspHits[c.owasp]) owaspHits[c.owasp]={id:c.owasp,name:owaspNames[c.owasp],finding:f.title,status:f.sev==='LOW'?'PARTIAL':'FAIL'};
+    if(c.owaspApi&&!owaspApiHits[c.owaspApi]) owaspApiHits[c.owaspApi]={id:c.owaspApi,name:owaspApiNames[c.owaspApi],finding:f.title,status:f.sev==='LOW'?'PARTIAL':'FAIL'};
+    if(c.owaspAi&&!owaspAiHits[c.owaspAi]) owaspAiHits[c.owaspAi]={id:c.owaspAi,name:owaspAiNames[c.owaspAi],finding:f.title,status:f.sev==='LOW'?'PARTIAL':'FAIL'};
+    if(c.atlas&&!atlasHits[c.atlas]) atlasHits[c.atlas]={id:c.atlas,name:atlasNames[c.atlas]||c.atlas,finding:f.title,status:f.sev==='LOW'?'PARTIAL':'FAIL'};
     if(c.nist) nistHits[c.nist]?.push(f.title);
     if(c.iso&&!isoHits[c.iso]) isoHits[c.iso]={control:c.iso,finding:f.title,status:f.sev==='LOW'?'PARTIAL':'FAIL'};
     if(c.pci&&!pciHits[c.pci]) pciHits[c.pci]={requirement:c.pci,finding:f.title,status:f.sev==='CRITICAL'?'FAIL':'PARTIAL'};
   }
-  const owaspList = ['A01','A02','A03','A04','A05','A06','A07','A08','A09','A10'].map(id=>owaspHits[id]||{id,name:owaspNames[id],finding:'No specific findings.',status:'PASS'});
-  const nistList  = Object.entries(nistHits).map(([fn,items])=>({function:fn,finding:items.length?items.slice(0,2).join('; '):'No gaps identified.',gap:items.length?'Requires immediate attention.':'Controls appear adequate.'}));
-  const isoList   = Object.values(isoHits).slice(0,8);
-  const pciList   = Object.values(pciHits).slice(0,8);
+
+  const owaspList    = ['A01','A02','A03','A04','A05','A06','A07','A08','A09','A10'].map(id=>owaspHits[id]||{id,name:owaspNames[id],finding:'No specific findings.',status:'PASS'});
+  const owaspApiList = ['API1','API2','API3','API4','API5','API6','API7','API8','API9','API10'].map(id=>owaspApiHits[id]||{id,name:owaspApiNames[id],finding:'No specific findings detected.',status:'PASS'});
+  const owaspAiList  = ['LLM01','LLM02','LLM03','LLM04','LLM05','LLM06','LLM07','LLM08','LLM09','LLM10'].map(id=>owaspAiHits[id]||{id,name:owaspAiNames[id],finding:'Not applicable or no findings.',status:isAiProject?'PASS':'N/A'});
+  const atlasHitsList= Object.values(atlasHits);
+  const atlasList    = Object.entries(atlasNames).map(([id,name])=>atlasHits[id]||{id,name,finding:'No evidence detected.',status:isAiProject?'PASS':'N/A'});
+  const nistList     = Object.entries(nistHits).map(([fn,items])=>({function:fn,finding:items.length?items.slice(0,2).join('; '):'No gaps identified.',gap:items.length?'Requires immediate attention.':'Controls appear adequate.'}));
+  const isoList      = Object.values(isoHits).slice(0,8);
+  const pciList      = Object.values(pciHits).slice(0,8);
 
   const pasta=[
     {title:'Define Business Objectives',analysis:`${project.name} is a ${project.type} handling ${project.classification} data.`,implications:'Financial data exposure directly impacts business continuity and customer trust.'},
@@ -1229,10 +1692,48 @@ function analyzeDocuments(hld, lld, project) {
   ];
 
   const roadmap=[
-    {phase:'Immediate (0–7 days)',color:'#ff2d55',icon:'🚨',actions:['Rotate all JWT secrets to 256-bit cryptographically random keys','Remove debug endpoint from production NOW','Set S3 bucket ACL to private; enable Block Public Access','Stop storing CVV — purge existing CVV data immediately','Enable WAF on API Gateway with OWASP rule set','Restrict Admin Dashboard to VPN only']},
-    {phase:'Short-term (1–4 weeks)',color:'#ff6b35',icon:'⚡',actions:['Migrate MD5 to bcrypt (cost≥12) with rehashing on next login','Implement authorization checks on all parameterized endpoints','Enable mTLS between all microservices (Istio/Linkerd)','Move secrets to AWS Secrets Manager','Enforce MFA for all admin accounts','Add rate limiting to payment and auth endpoints']},
-    {phase:'Medium-term (1–3 months)',color:'#ffd60a',icon:'🔧',actions:['Enable RDS encryption at rest with AWS KMS','Implement field-level encryption for SSN and PAN','Create fine-grained IAM roles per service (least privilege)','Separate AWS accounts for dev, staging, production','Integrate CloudWatch with SIEM (Splunk/ELK/Security Hub)','Implement Kubernetes NetworkPolicies and namespace isolation']},
-    {phase:'Long-term (3–6 months)',color:'#2dd36f',icon:'🏗️',actions:['Achieve PCI-DSS compliance — engage QSA for formal assessment','Implement Zero Trust Architecture with identity-aware proxies','Deploy DAST/SAST in CI/CD pipeline for regression prevention','Launch security champions program in engineering teams','Conduct red team exercise to validate remediation','Implement continuous compliance monitoring with AWS Config']},
+    {phase:'Immediate (0–7 days)',color:'#ff2d55',icon:'🚨',actions:[
+      'Rotate all JWT secrets to 256-bit cryptographically random keys',
+      'Remove debug endpoint from production NOW',
+      'Set S3 bucket ACL to private; enable Block Public Access',
+      'Stop storing CVV — purge existing CVV data immediately',
+      'Enable WAF on API Gateway with OWASP API rule set',
+      'Restrict Admin Dashboard to VPN only',
+      ...(isAiProject?['Audit all LLM prompt templates for injection risks','Remove PII from LLM context and prompts immediately']:
+          isApiProject?['Implement object-level authorization on all API endpoints']:
+          [])
+    ]},
+    {phase:'Short-term (1–4 weeks)',color:'#ff6b35',icon:'⚡',actions:[
+      'Migrate MD5 to bcrypt (cost≥12) with rehashing on next login',
+      'Implement authorization checks on all parameterized endpoints',
+      'Enable mTLS between all microservices (Istio/Linkerd)',
+      'Move secrets to AWS Secrets Manager',
+      'Enforce MFA for all admin accounts',
+      'Add rate limiting to all API and auth endpoints',
+      ...(isAiProject?['Implement input/output validation for all LLM interactions','Apply least privilege to all AI agent permissions']:
+          isApiProject?['Create API inventory and versioning strategy','Implement API gateway with OWASP API security rules']:
+          [])
+    ]},
+    {phase:'Medium-term (1–3 months)',color:'#ffd60a',icon:'🔧',actions:[
+      'Enable RDS encryption at rest with AWS KMS',
+      'Implement field-level encryption for SSN and PAN',
+      'Create fine-grained IAM roles per service (least privilege)',
+      'Separate AWS accounts for dev, staging, production',
+      'Integrate CloudWatch with SIEM (Splunk/ELK/Security Hub)',
+      'Implement Kubernetes NetworkPolicies and namespace isolation',
+      ...(isAiProject?['Implement adversarial robustness testing for ML models','Set up training data validation and anomaly detection pipeline']:
+          [])
+    ]},
+    {phase:'Long-term (3–6 months)',color:'#2dd36f',icon:'🏗️',actions:[
+      'Achieve PCI-DSS compliance — engage QSA for formal assessment',
+      'Implement Zero Trust Architecture with identity-aware proxies',
+      'Deploy DAST/SAST + AI security scanning in CI/CD pipeline',
+      'Launch security champions program in engineering teams',
+      'Conduct red team exercise including AI/API attack scenarios',
+      'Implement continuous compliance monitoring with AWS Config',
+      ...(isAiProject?['Establish AI governance policy and model risk management framework','Subscribe to MITRE ATLAS and OWASP LLM working group updates']:
+          [])
+    ]},
   ];
 
   const entryPoints=[
@@ -1258,14 +1759,16 @@ function analyzeDocuments(hld, lld, project) {
   ];
 
   return {findings,critCount,highCount,medCount,lowCount,riskScore,overallRisk,
-    archDomains,strideMap,pasta,threatActors,roadmap,owaspList,nistList,isoList,pciList,
+    archDomains,strideMap,pasta,threatActors,roadmap,
+    owaspList,owaspApiList,owaspAiList,atlasList,nistList,isoList,pciList,
+    isAiProject,isApiProject,
     entryPoints,trustBoundaries,dataFlows,extDeps};
 }
 
 // ── REPORT RENDER ──────────────────────────────────────────────
 const TABS = [{id:'overview',label:'OVERVIEW'},{id:'stride',label:'STRIDE'},{id:'pasta',label:'PASTA'},
   {id:'vulns',label:'VULNERABILITIES'},{id:'surface',label:'ATTACK SURFACE'},
-  {id:'arch',label:'ARCH REVIEW'},{id:'compliance',label:'COMPLIANCE'},{id:'roadmap',label:'ROADMAP'}];
+  {id:'arch',label:'ARCH REVIEW'},{id:'compliance',label:'COMPLIANCE (7 FW)'},{id:'roadmap',label:'ROADMAP'}];
 
 function sc(s){return{CRITICAL:'#ff2d55',HIGH:'#ff6b35',MEDIUM:'#ffd60a',LOW:'#2dd36f',INFO:'#22d3ee'}[s]||'#3d5a7a'}
 function rc(s){return s>=75?'#ff2d55':s>=50?'#ff6b35':s>=25?'#ffd60a':'#2dd36f'}
@@ -1462,21 +1965,94 @@ function renderArch() {
 
 function renderCompliance() {
   const r = currentReport;
+  const fwCard = (title, color, items, idKey, nameKey, findKey, statusKey, emptyMsg, accent) => {
+    const hasFindings = items.some(i => i[statusKey||'status'] === 'FAIL' || i[statusKey||'status'] === 'PARTIAL');
+    return `<div class="fw-c">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+        <div style="font-size:13px;font-weight:600;color:${color}">${title}</div>
+        ${hasFindings?`<span style="font-size:9px;font-family:var(--mono);color:${color};background:${color}18;border:1px solid ${color}44;padding:2px 7px;border-radius:3px">GAPS FOUND</span>`:'<span style="font-size:9px;font-family:var(--mono);color:var(--green);background:#2dd36f18;border:1px solid #2dd36f44;padding:2px 7px;border-radius:3px">CLEAN</span>'}
+      </div>
+      ${items.filter(i=>i[statusKey||'status']!=='N/A').map(i=>`
+      <div class="gap-item">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
+          <span style="font-family:var(--mono);font-size:10px;color:${color}">${i[idKey]} — ${i[nameKey]}</span>
+          ${bdg(i[statusKey||'status'])}
+        </div>
+        <div style="font-size:11px;color:var(--text)">${i[findKey]}</div>
+      </div>`).join('')}
+    </div>`;
+  };
+
   document.getElementById('report-content').innerHTML = `
     <div style="font-size:20px;font-weight:600;color:var(--bright);margin-bottom:4px">Compliance Gap Analysis</div>
-    <div style="font-size:12px;color:var(--muted);margin-bottom:20px">OWASP Top 10 · NIST CSF · ISO 27001 · PCI-DSS</div>
-    <div class="g2">
-      <div class="fw-c"><div style="font-size:13px;font-weight:600;color:var(--red);margin-bottom:14px">OWASP Top 10</div>
-        ${r.owaspList.map(o=>`<div class="gap-item"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px"><span style="font-family:var(--mono);font-size:10px;color:var(--red)">${o.id} — ${o.name}</span>${bdg(o.status)}</div><div style="font-size:11px;color:var(--text)">${o.finding}</div></div>`).join('')}
+    <div style="font-size:12px;color:var(--muted);margin-bottom:6px">OWASP Top 10 · OWASP API Top 10 · OWASP LLM/AI Top 10 · MITRE ATLAS · NIST CSF · ISO 27001 · PCI-DSS</div>
+
+    ${r.isAiProject || r.isApiProject ? `
+    <div style="background:#e8b84b0e;border:1px solid #e8b84b33;border-radius:8px;padding:10px 16px;margin-bottom:16px;font-size:12px;color:var(--gold)">
+      ⚡ ${[r.isAiProject?'AI/LLM components detected':'',r.isApiProject?'API architecture detected':''].filter(Boolean).join(' · ')} — Extended AI & API security frameworks applied
+    </div>` : ''}
+
+    <div style="margin-bottom:14px">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.1em;margin-bottom:10px">STANDARD WEB SECURITY</div>
+      <div class="g2">
+        ${fwCard('OWASP Top 10 (Web)','var(--red)',r.owaspList,'id','name','finding','status','')}
+        <div class="fw-c">
+          <div style="font-size:13px;font-weight:600;color:var(--cyan);margin-bottom:14px">NIST CSF</div>
+          ${r.nistList.map(n=>`<div class="gap-item"><div style="font-family:var(--mono);font-size:10px;color:var(--cyan);margin-bottom:3px">${n.function}</div><div style="font-size:11px;color:var(--text)">${n.finding}</div></div>`).join('')}
+        </div>
+        ${fwCard('ISO 27001','var(--gold)',r.isoList.length?r.isoList:[{id:'—',name:'No gaps',finding:'No ISO 27001 gaps detected from analysis.',status:'PASS'}],'control','control','finding','status','')}
+        ${fwCard('PCI-DSS v4','var(--orange)',r.pciList.length?r.pciList:[{id:'—',name:'No gaps',finding:'No PCI-DSS gaps detected from analysis.',status:'PASS'}],'requirement','requirement','finding','status','')}
       </div>
-      <div class="fw-c"><div style="font-size:13px;font-weight:600;color:var(--cyan);margin-bottom:14px">NIST CSF</div>
-        ${r.nistList.map(n=>`<div class="gap-item"><div style="font-family:var(--mono);font-size:10px;color:var(--cyan);margin-bottom:3px">${n.function}</div><div style="font-size:11px;color:var(--text)">${n.finding}</div></div>`).join('')}
+    </div>
+
+    <div style="margin-bottom:14px">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.1em;margin-bottom:10px">API SECURITY</div>
+      <div class="g2">
+        ${fwCard('OWASP API Security Top 10','#9d6eff',r.owaspApiList,'id','name','finding','status','')}
+        <div class="fw-c">
+          <div style="font-size:13px;font-weight:600;color:#9d6eff;margin-bottom:6px">API Security Checklist</div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:12px">Key controls for API-first architectures</div>
+          ${[
+            {check:'Object-level authorization on all endpoints',status:r.owaspApiList.find(i=>i.id==='API1')?.status||'PASS'},
+            {check:'Authentication on all API routes',status:r.owaspApiList.find(i=>i.id==='API2')?.status||'PASS'},
+            {check:'Rate limiting & throttling in place',status:r.owaspApiList.find(i=>i.id==='API4')?.status||'PASS'},
+            {check:'No sensitive data in error responses',status:r.owaspApiList.find(i=>i.id==='API8')?.status||'PASS'},
+            {check:'API inventory & versioning maintained',status:'PASS'},
+            {check:'Input validation on all API parameters',status:r.findings.some(f=>f.cat?.includes('Injection'))?'FAIL':'PASS'},
+          ].map(c=>`
+          <div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border)">
+            <span style="color:${c.status==='FAIL'?'var(--red)':c.status==='PARTIAL'?'var(--yellow)':'var(--green)'};font-size:12px">${c.status==='FAIL'?'✗':c.status==='PARTIAL'?'◐':'✓'}</span>
+            <span style="font-size:11px;color:var(--text)">${c.check}</span>
+            ${bdg(c.status)}
+          </div>`).join('')}
+        </div>
       </div>
-      <div class="fw-c"><div style="font-size:13px;font-weight:600;color:var(--gold);margin-bottom:14px">ISO 27001</div>
-        ${r.isoList.length?r.isoList.map(i=>`<div class="gap-item"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px"><span style="font-family:var(--mono);font-size:10px;color:var(--gold)">${i.control}</span>${bdg(i.status)}</div><div style="font-size:11px;color:var(--text)">${i.finding}</div></div>`).join(''):'<div style="color:var(--muted);font-size:12px">No ISO 27001 gaps detected.</div>'}
-      </div>
-      <div class="fw-c"><div style="font-size:13px;font-weight:600;color:var(--orange);margin-bottom:14px">PCI-DSS</div>
-        ${r.pciList.length?r.pciList.map(p=>`<div class="gap-item"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px"><span style="font-family:var(--mono);font-size:10px;color:var(--orange)">${p.requirement}</span>${bdg(p.status)}</div><div style="font-size:11px;color:var(--text)">${p.finding}</div></div>`).join(''):'<div style="color:var(--muted);font-size:12px">No PCI-DSS gaps detected.</div>'}
+    </div>
+
+    <div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.1em;margin-bottom:10px">AI / ML SECURITY ${!r.isAiProject?'<span style="color:#3d5a7a;font-size:9px">— No AI components detected in documents</span>':''}</div>
+      <div class="g2">
+        ${fwCard('OWASP LLM / AI Top 10 (2024)','var(--cyan)',r.owaspAiList,'id','name','finding','status','')}
+        <div class="fw-c">
+          <div style="font-size:13px;font-weight:600;color:var(--cyan);margin-bottom:6px">MITRE ATLAS</div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:12px">Adversarial Threat Landscape for AI Systems</div>
+          ${r.atlasList.filter(i=>i.status!=='N/A').length ? r.atlasList.filter(i=>i.status!=='N/A').map(i=>`
+          <div class="gap-item">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
+              <span style="font-family:var(--mono);font-size:10px;color:var(--cyan)">${i.id}</span>
+              ${bdg(i.status)}
+            </div>
+            <div style="font-size:11px;font-weight:500;color:var(--text);margin-bottom:2px">${i.name}</div>
+            <div style="font-size:11px;color:var(--muted)">${i.finding}</div>
+          </div>`).join('') : `
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px;text-align:center">
+            <div style="font-size:24px;margin-bottom:8px">🤖</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.6">No AI/ML components detected in the architecture documents.<br>MITRE ATLAS applies to systems with AI/ML pipelines, LLM integrations, or ML model serving.</div>
+          </div>`}
+          <div style="margin-top:12px;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;font-size:11px;color:var(--muted);line-height:1.6">
+            <strong style="color:var(--cyan)">MITRE ATLAS</strong> covers AI-specific attack techniques including model theft, adversarial examples, training data poisoning, and prompt injection. Applies when your architecture includes ML models, LLMs, or AI agents.
+          </div>
+        </div>
       </div>
     </div>`;
 }
