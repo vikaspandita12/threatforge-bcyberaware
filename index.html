@@ -323,7 +323,7 @@ textarea{font-family:var(--mono)!important;font-size:12px;line-height:1.6;resize
     <div id="header-auth" class="hide">
       <div class="user-chip" onclick="toggleUserMenu()">
         <div class="avatar" id="user-avatar">V</div>
-        <span class="user-email" id="user-email-display"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8afff9eff8caefe7ebe3e6a4e9e5e7">[email&#160;protected]</a></span>
+        <span class="user-email" id="user-email-display"></span>
         <span class="plan-badge plan-free" id="plan-display">FREE</span>
       </div>
       <div id="user-menu" style="position:absolute;top:62px;right:28px;background:var(--panel);
@@ -637,9 +637,12 @@ textarea{font-family:var(--mono)!important;font-size:12px;line-height:1.6;resize
 <!-- ═══════════════════════════════════════════════════════════
      JAVASCRIPT
 ═══════════════════════════════════════════════════════════ -->
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 // ── INIT SUPABASE ──────────────────────────────────────────────
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+let sb = null;
+try {
+  sb = (typeof supabase !== 'undefined') ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON) : null;
+} catch(e) { console.warn('Supabase init failed:', e); }
 let currentUser = null;
 let currentProfile = null;
 let currentReport = null;
@@ -700,7 +703,7 @@ Error Handling:
 - No input validation on payment amounts (allows negative values)`;
 
 // ── AUTH STATE ─────────────────────────────────────────────────
-sb.auth.onAuthStateChange(async (event, session) => {
+sb?.auth.onAuthStateChange(async (event, session) => {
   if (session?.user) {
     currentUser = session.user;
     await loadProfile();
@@ -739,7 +742,7 @@ function updateHeaderAuth(loggedIn) {
 }
 
 async function loadProfile() {
-  if (!currentUser) return;
+  if (!currentUser || !sb) return;
   const { data } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
   currentProfile = data;
 }
@@ -772,6 +775,7 @@ async function signIn() {
   const email = document.getElementById('login-email').value.trim();
   const pass  = document.getElementById('login-pass').value;
   if (!email || !pass) return showAuthError('Please enter your email and password.');
+  if (!sb) return showAuthError('Connection unavailable. Please use a local server (not file://) or check your internet connection.');
   const btn = document.querySelector('#form-login .btn-gold');
   btn.textContent = 'Signing in…'; btn.disabled = true;
   try {
@@ -801,6 +805,7 @@ async function signUp() {
   if (!name || !email || !pass) return showAuthError('Please fill in all fields.');
   if (pass.length < 8) return showAuthError('Password must be at least 8 characters.');
   if (!email.includes('@')) return showAuthError('Please enter a valid email address.');
+  if (!sb) return showAuthError('Connection unavailable. Please use a local server (not file://) or check your internet connection.');
   const btn = document.querySelector('#form-signup .btn-gold');
   btn.textContent = 'Creating account…'; btn.disabled = true;
   try {
@@ -834,7 +839,7 @@ async function signUp() {
 }
 
 async function signOut() {
-  await sb.auth.signOut();
+  if (sb) await sb.auth.signOut();
   toggleUserMenu(false);
 }
 
@@ -881,6 +886,7 @@ async function loadDashboard() {
   document.getElementById('usage-bar-wrap').style.display = plan === 'free' ? 'flex' : 'none';
 
   // Load reports
+  if (!sb) return;
   const { data: reports, error } = await sb.from('reports')
     .select('id,project_name,project_type,classification,risk_score,risk_level,vuln_count,created_at')
     .eq('user_id', currentUser.id)
@@ -925,6 +931,7 @@ async function loadDashboard() {
 }
 
 async function openReport(id) {
+  if (!sb) return alert('Could not load report.');
   const { data, error } = await sb.from('reports').select('*').eq('id', id).single();
   if (error || !data) return alert('Could not load report.');
   currentReport = data.report_data;
@@ -941,7 +948,7 @@ async function openReport(id) {
 async function deleteReport(id, btn) {
   if (!confirm('Delete this report? This cannot be undone.')) return;
   btn.textContent = '…';
-  await sb.from('reports').delete().eq('id', id);
+  if (sb) await sb.from('reports').delete().eq('id', id);
   loadDashboard();
 }
 
@@ -987,12 +994,19 @@ function loadDemo() {
   document.getElementById('az-class').value = 'PCI-DSS Sensitive';
 }
 
-document.getElementById('az-hld').addEventListener('input', function(){
-  document.getElementById('hld-cnt').textContent = this.value.length + ' chars';
-});
-document.getElementById('az-lld').addEventListener('input', function(){
-  document.getElementById('lld-cnt').textContent = this.value.length + ' chars';
-});
+// Safely attach event listeners only if elements exist
+const hldEl = document.getElementById('az-hld');
+if (hldEl) {
+  hldEl.addEventListener('input', function(){
+    document.getElementById('hld-cnt').textContent = this.value.length + ' chars';
+  });
+}
+const lldEl = document.getElementById('az-lld');
+if (lldEl) {
+  lldEl.addEventListener('input', function(){
+    document.getElementById('lld-cnt').textContent = this.value.length + ' chars';
+  });
+}
 
 async function runAnalysis() {
   const hld = document.getElementById('az-hld').value;
@@ -1033,7 +1047,7 @@ async function runAnalysis() {
 }
 
 async function incrementUsage() {
-  if (!currentUser) return;
+  if (!currentUser || !sb) return;
   await loadProfile();
   const used = (currentProfile?.reports_this_month || 0) + 1;
   await sb.from('profiles').update({ reports_this_month: used }).eq('id', currentUser.id);
@@ -1042,7 +1056,7 @@ async function incrementUsage() {
 
 // ── SAVE REPORT ────────────────────────────────────────────────
 async function saveReport() {
-  if (!currentUser || !currentReport) return;
+  if (!currentUser || !currentReport || !sb) return;
   const btn = document.getElementById('save-btn');
   btn.textContent = '💾 Saving…'; btn.disabled = true;
   const m = currentReport._meta || {};
@@ -1870,13 +1884,14 @@ function rc(s){return s>=75?'#ff2d55':s>=50?'#ff6b35':s>=25?'#ffd60a':'#2dd36f'}
 function bdg(s){return`<span class="badge b${s}">${s}</span>`}
 
 function renderReportView() {
+  if (!currentReport) return; // Safety check: don't render if no report loaded
   const r = currentReport;
   const m = r._meta || {};
   document.getElementById('rp-name').textContent = m.name || 'Report';
   document.getElementById('rp-type-badge').textContent = m.type || '';
   document.getElementById('rp-type-badge').className = 'badge';
-  document.getElementById('rp-risk-badge').textContent = r.overallRisk + ' RISK';
-  document.getElementById('rp-risk-badge').className = `badge b${r.overallRisk}`;
+  document.getElementById('rp-risk-badge').textContent = (r.overallRisk || 'LOW') + ' RISK';
+  document.getElementById('rp-risk-badge').className = `badge b${r.overallRisk || 'LOW'}`;
   document.getElementById('save-btn').style.display = m.saved ? 'none' : 'inline-flex';
 
   document.getElementById('report-tabs').innerHTML = TABS.map(t =>
@@ -1899,12 +1914,13 @@ function renderReportTab() {
 }
 
 function renderOverview() {
+  if (!currentReport) return; // Safety check
   const r = currentReport;
-  const col = rc(r.riskScore);
+  const col = rc(r.riskScore || 0);
   const C = 2*Math.PI*54;
-  const off = C-(r.riskScore/100)*C;
-  const label = r.riskScore>=75?'CRITICAL RISK':r.riskScore>=50?'HIGH RISK':r.riskScore>=25?'MODERATE RISK':'LOW RISK';
-  const top3 = r.findings.slice(0,3).map(f=>f.title);
+  const off = C-((r.riskScore||0)/100)*C;
+  const label = (r.riskScore||0)>=75?'CRITICAL RISK':(r.riskScore||0)>=50?'HIGH RISK':(r.riskScore||0)>=25?'MODERATE RISK':'LOW RISK';
+  const top3 = (r.findings||[]).slice(0,3).map(f=>f.title);
   document.getElementById('report-content').innerHTML = `
     <div class="risk-banner" style="background:${col}0d;border-color:${col}33;border-left-color:${col}">
       <div style="text-align:center;flex-shrink:0">
@@ -1952,12 +1968,13 @@ function renderOverview() {
 }
 
 function renderStride() {
+  if (!currentReport) return; // Safety check
   const r = currentReport;
   const icons={Spoofing:'🎭',Tampering:'✏️',Repudiation:'🚫','Info Disclosure':'👁️',DoS:'💥','Elevation of Privilege':'⬆️'};
   document.getElementById('report-content').innerHTML = `
     <div style="font-size:20px;font-weight:600;color:var(--bright);margin-bottom:4px">STRIDE Threat Model</div>
     <div style="font-size:12px;color:var(--muted);margin-bottom:20px">Spoofing · Tampering · Repudiation · Information Disclosure · Denial of Service · Elevation of Privilege</div>
-    <div class="g2">${Object.entries(r.strideMap).map(([k,v])=>`
+    <div class="g2">${Object.entries(r.strideMap||{}).map(([k,v])=>`
     <div class="stride-c">
       <div class="stride-h" onclick="this.nextElementSibling.classList.toggle('open');this.querySelector('.arr').style.transform=this.nextElementSibling.classList.contains('open')?'rotate(180deg)':''">
         <span style="font-size:18px">${icons[k]||'🔒'}</span>
@@ -1973,6 +1990,7 @@ function renderStride() {
 }
 
 function renderPasta() {
+  if (!currentReport) return; // Safety check
   const r = currentReport;
   document.getElementById('report-content').innerHTML = `
     <div style="font-size:20px;font-weight:600;color:var(--bright);margin-bottom:4px">PASTA Analysis</div>
@@ -1992,6 +2010,7 @@ function renderPasta() {
 }
 
 function renderVulns() {
+  if (!currentReport) return; // Safety check
   const r = currentReport;
   const filtered = vulnFilter==='ALL'?r.findings:r.findings.filter(f=>f.sev===vulnFilter);
   const cnts = f => r.findings.filter(v=>v.sev===f).length;
@@ -2024,6 +2043,7 @@ function renderVulns() {
 }
 
 function renderSurface() {
+  if (!currentReport) return; // Safety check
   const r = currentReport;
   document.getElementById('report-content').innerHTML = `
     <div style="font-size:20px;font-weight:600;color:var(--bright);margin-bottom:4px">Attack Surface Analysis</div>
@@ -2041,6 +2061,7 @@ function renderSurface() {
 }
 
 function renderArch() {
+  if (!currentReport) return; // Safety check
   const r = currentReport;
   document.getElementById('report-content').innerHTML = `
     <div style="font-size:20px;font-weight:600;color:var(--bright);margin-bottom:4px">Security Architecture Review</div>
@@ -2059,6 +2080,7 @@ function renderArch() {
 }
 
 function renderCompliance() {
+  if (!currentReport) return; // Safety check
   const r = currentReport;
   const fwCard = (title, color, items, idKey, nameKey, findKey, statusKey, emptyMsg, accent) => {
     const hasFindings = items.some(i => i[statusKey||'status'] === 'FAIL' || i[statusKey||'status'] === 'PARTIAL');
@@ -2153,6 +2175,7 @@ function renderCompliance() {
 }
 
 function renderRoadmap() {
+  if (!currentReport) return; // Safety check
   const r = currentReport;
   document.getElementById('report-content').innerHTML = `
     <div style="font-size:20px;font-weight:600;color:var(--bright);margin-bottom:4px">Remediation Roadmap</div>
@@ -2183,6 +2206,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Then check if user is already logged in
 (async () => {
+  if (!sb) return;
   try {
     const { data: { session } } = await sb.auth.getSession();
     if (session?.user) {
