@@ -516,16 +516,32 @@ textarea{font-family:var(--mono)!important;font-size:12px;line-height:1.6;resize
 
 <!-- REPORT -->
 <div class="view" id="view-report">
+  <!-- Demo signup nudge bar (only shown for guests) -->
+  <div id="demo-signup-bar" style="display:none;background:linear-gradient(135deg,#e8b84b18,#e8b84b08);
+    border-bottom:1px solid #e8b84b44;padding:12px 28px;align-items:center;
+    justify-content:space-between;gap:16px;flex-wrap:wrap">
+    <div style="display:flex;align-items:center;gap:12px">
+      <span style="font-size:20px">🔐</span>
+      <div>
+        <div style="font-size:13px;font-weight:600;color:var(--gold)">You're viewing a demo report</div>
+        <div style="font-size:11px;color:var(--muted)">Create a free account to analyse your own HLD & LLD documents and save reports</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;flex-shrink:0">
+      <button class="btn btn-ghost btn-sm" onclick="showView('auth');switchAuthTab('login')">Sign In</button>
+      <button class="btn btn-gold btn-sm" onclick="showView('auth');switchAuthTab('signup')">Create Free Account →</button>
+    </div>
+  </div>
   <div class="report-topbar">
     <div class="report-info">
-      <button class="btn btn-ghost btn-sm" onclick="showView('dashboard')">← Dashboard</button>
+      <button class="btn btn-ghost btn-sm" onclick="currentUser ? showView('dashboard') : showView('landing')">← Back</button>
       <span class="report-proj" id="rp-name">—</span>
       <span class="badge" id="rp-type-badge"></span>
       <span id="rp-risk-badge" class="badge"></span>
     </div>
     <div style="display:flex;gap:8px">
       <button class="btn btn-gold btn-sm" id="save-btn" onclick="saveReport()">💾 Save Report</button>
-      <button class="btn btn-ghost btn-sm" onclick="showView('analyze')">+ New Review</button>
+      <button class="btn btn-ghost btn-sm" onclick="currentUser ? showView('analyze') : (showView('auth'),switchAuthTab('signup'))">+ New Review</button>
     </div>
   </div>
   <div class="tab-bar" id="report-tabs"></div>
@@ -940,11 +956,52 @@ async function saveReport() {
 }
 
 function tryDemo() {
-  loadDemo();
-  document.getElementById('az-hld').value = SAMPLE_HLD;
-  document.getElementById('az-lld').value = SAMPLE_LLD;
-  if (currentUser) showView('analyze');
-  else showView('auth');
+  // Run full demo analysis without requiring login
+  const proj = {
+    name: 'PayStream Payment Platform',
+    type: 'FinTech / Payment',
+    classification: 'PCI-DSS Sensitive',
+    team: 'Platform Engineering',
+  };
+
+  // Show loading screen
+  showView('analyze');
+  document.getElementById('az-step1').style.display = 'none';
+  document.getElementById('az-step2').style.display = 'none';
+  document.getElementById('az-loading').style.display = 'block';
+  setStepDots(3);
+
+  const logs = ['Loading PayStream demo documents…','Running STRIDE analysis…','Executing PASTA framework…','Mapping attack surface…','Checking compliance gaps…','Generating remediation roadmap…'];
+  const logEl = document.getElementById('az-log');
+  logEl.innerHTML = '';
+  let i = 0;
+  const iv = setInterval(() => {
+    if (i < logs.length) {
+      const d = document.createElement('div');
+      d.className = 'log-line';
+      d.textContent = '▸ ' + logs[i++];
+      logEl.appendChild(d);
+    } else {
+      clearInterval(iv);
+      currentReport = analyzeDocuments(SAMPLE_HLD, SAMPLE_LLD, proj);
+      currentReport._meta = {
+        name: proj.name, type: proj.type,
+        classification: proj.classification, team: proj.team,
+        saved: false, demo: true,
+        hld: SAMPLE_HLD, lld: SAMPLE_LLD
+      };
+      setTimeout(() => {
+        renderReportView();
+        document.getElementById('az-loading').style.display = 'none';
+        // Hide save button for guests — show sign up prompt instead
+        if (!currentUser) {
+          document.getElementById('save-btn').style.display = 'none';
+          document.getElementById('demo-signup-bar').style.display = 'flex';
+        }
+        showView('report');
+      }, 400);
+    }
+  }, 300);
 }
 
 // ── RULE ENGINE (24 security rules) ────────────────────────────
