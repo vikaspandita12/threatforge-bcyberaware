@@ -1430,7 +1430,102 @@ function downloadPDF() {
     win.print();
     setTimeout(() => win.close(), 1000);
   }, 800);
-},
+}
+
+// ── SECURITY RULES DATABASE ────────────────────────────────────
+const RULES = [
+// ── CORE WEB / INFRA RULES (R01–R13) ──────────────────────────
+  {id:'R01',title:'Unencrypted Database at Rest',sev:'CRITICAL',cvss:9.1,cat:'A02:Crypto Failures',comp:'RDS / Database',stride:'Info Disclosure',
+   pattern:[/unencrypt.*at.*rest/i,/no.*encrypt.*rest/i,/rds.*unencrypt/i,/database.*plaintext/i,/not.*encrypt.*rds/i],
+   desc:'Database stores sensitive data unencrypted; a storage-layer breach exposes all records.',
+   exploit:'Attacker with S3 or EBS snapshot access reads entire database including PII and card data in plaintext.',
+   rec:'Enable RDS encryption at rest with AWS KMS; enable S3 bucket encryption; encrypt all storage volumes.',
+   effort:'MEDIUM',arch:'data_protection',compliance:{owasp:'A02',nist:'Protect',iso:'A.10.1.1',pci:'Req 3.4'}},
+
+  {id:'R02',title:'Weak Password Hashing (MD5)',sev:'CRITICAL',cvss:9.0,cat:'A02:Crypto Failures',comp:'User Service / Auth',stride:'Info Disclosure',
+   pattern:[/md5.*hash/i,/password.*md5/i,/md5.*password/i,/password.*\bmd5\b/i,/hashed.*md5/i,/hash.*md5/i],
+   desc:'MD5 is a broken hashing algorithm unsuitable for passwords; rainbow tables crack MD5 hashes instantly.',
+   exploit:'Attacker dumps user table and cracks all MD5 password hashes offline in minutes using precomputed tables.',
+   rec:'Migrate to bcrypt (cost ≥12) or Argon2id; rehash on next successful login; invalidate all sessions.',
+   effort:'MEDIUM',arch:'identity_access_management',compliance:{owasp:'A02',nist:'Protect',iso:'A.10.1.1',pci:'Req 8.2'}},
+
+  {id:'R03',title:'Hardcoded Weak JWT Secret',sev:'CRITICAL',cvss:9.3,cat:'A02:Crypto Failures',comp:'Auth Service',stride:'Spoofing',
+   pattern:[/jwt.*secret.*=.*["'][^"']{1,16}["']/i,/secret.*=.*["']secret/i,/hs256.*secret/i,/jwt.*hs256/i,/secret.*key.*=.*["'][a-z0-9]{1,16}["']/i],
+   desc:'JWT tokens signed with a hardcoded weak secret can be forged by any attacker who knows or guesses the key.',
+   exploit:'Attacker uses known key "secret123" to forge admin JWT tokens granting full system access.',
+   rec:'Generate a cryptographically random 256-bit secret; store in Secrets Manager; rotate quarterly.',
+   effort:'LOW',arch:'identity_access_management',compliance:{owasp:'A02',nist:'Protect',iso:'A.10.1.2',pci:'Req 8.3'}},
+
+  {id:'R04',title:'No MFA for Admin Users',sev:'HIGH',cvss:8.8,cat:'A07:Auth Failures',comp:'Admin Dashboard',stride:'Spoofing',
+   pattern:[/no.*mfa.*admin/i,/admin.*no.*mfa/i,/mfa.*not.*admin/i,/without.*mfa/i,/no multi.*factor/i,/no.*two.*factor/i],
+   desc:'Admin accounts without MFA are one stolen password away from complete system compromise.',
+   exploit:'Attacker phishes admin credentials and logs into Admin Dashboard without any additional verification.',
+   rec:'Enforce TOTP/FIDO2 MFA for all admin accounts; use hardware keys for privileged access.',
+   effort:'LOW',arch:'identity_access_management',compliance:{owasp:'A07',nist:'Protect',iso:'A.9.4.2',pci:'Req 8.4'}},
+
+  {id:'R05',title:'Admin Dashboard Exposed on Public Internet',sev:'HIGH',cvss:8.6,cat:'A05:Misconfiguration',comp:'Admin Dashboard',stride:'Elevation of Privilege',
+   pattern:[/admin.*public.*internet/i,/admin.*internet.*port/i,/public.*internet.*8080/i,/port.*8080/i,/admin.*port.*8080/i,/accessible.*internet/i],
+   desc:'Admin Dashboard reachable from the internet dramatically increases attack surface for brute force and exploitation.',
+   exploit:'Nation-state attacker enumerates admin portal, conducts credential stuffing using leaked credential databases.',
+   rec:'Restrict Admin Dashboard to internal network or VPN; implement IP allowlisting; use bastion host.',
+   effort:'LOW',arch:'network_security',compliance:{owasp:'A05',nist:'Protect',iso:'A.13.1.1',pci:'Req 1.3'}},
+
+  {id:'R06',title:'Public S3 Bucket with Sensitive Data',sev:'CRITICAL',cvss:9.5,cat:'A05:Misconfiguration',comp:'AWS S3',stride:'Info Disclosure',
+   pattern:[/public.*read.*acl/i,/s3.*public.*read/i,/public-read/i,/bucket.*public/i,/acl.*public/i],
+   desc:'S3 bucket with public-read ACL exposes all payment logs and sensitive records to the entire internet.',
+   exploit:'Anyone with the bucket URL can enumerate and download all payment transaction logs including cardholder data.',
+   rec:'Remove public-read ACL immediately; enable S3 Block Public Access; use signed URLs for legitimate access.',
+   effort:'LOW',arch:'data_protection',compliance:{owasp:'A05',nist:'Protect',iso:'A.13.2.1',pci:'Req 3.4'}},
+
+  {id:'R07',title:'Plaintext Storage of Card Numbers and CVV',sev:'CRITICAL',cvss:9.8,cat:'A02:Crypto Failures',comp:'Payment Service / DB',stride:'Info Disclosure',
+   pattern:[/cardnumber.*plaintext/i,/cvv.*plaintext/i,/card.*stored.*plain/i,/plaintext.*card/i,/plaintext.*cvv/i,/stored plaintext/i],
+   desc:'PCI-DSS prohibits storing CVV under any circumstances; storing card numbers in plaintext is a critical violation.',
+   exploit:'Single SQL injection vulnerability allows attacker to dump entire payments table with raw card numbers and CVVs.',
+   rec:'NEVER store CVV; use tokenization (Stripe tokens) for card numbers; encrypt PANs with AES-256 if storage required.',
+   effort:'HIGH',arch:'data_protection',compliance:{owasp:'A02',nist:'Protect',iso:'A.10.1.1',pci:'Req 3.2'}},
+
+  {id:'R08',title:'No Internal TLS Between Services',sev:'HIGH',cvss:8.1,cat:'A02:Crypto Failures',comp:'Microservices / EKS',stride:'Info Disclosure',
+   pattern:[/http.*not.*https.*internal/i,/internal.*rest.*http\b/i,/communicate.*http\b/i,/no.*tls.*internal/i,/no.*https.*internal/i,/plaintext.*internal/i],
+   desc:'Unencrypted inter-service communication allows any compromised pod to intercept all service traffic.',
+   exploit:'Attacker compromises one pod and runs a packet sniffer to capture all inter-service traffic including auth tokens.',
+   rec:'Implement mutual TLS (mTLS) using a service mesh (Istio or Linkerd); enforce HTTPS on all internal routes.',
+   effort:'MEDIUM',arch:'network_security',compliance:{owasp:'A02',nist:'Protect',iso:'A.13.2.3',pci:'Req 4.1'}},
+
+  {id:'R09',title:'Predictable Password Reset Token',sev:'HIGH',cvss:8.0,cat:'A07:Auth Failures',comp:'User Service',stride:'Spoofing',
+   pattern:[/predictable.*token/i,/reset.*token.*md5/i,/reset.*userid.*timestamp/i,/password.*reset.*predictable/i,/token.*userid.*timestamp/i],
+   desc:'Password reset token derived from userId + timestamp is predictable and can be computed by attackers.',
+   exploit:'Attacker requests reset for target account, computes the token from known userId and timestamp, resets password.',
+   rec:'Generate password reset tokens using a cryptographically secure RNG (crypto.randomBytes); set 15-minute expiry.',
+   effort:'LOW',arch:'identity_access_management',compliance:{owasp:'A07',nist:'Protect',iso:'A.9.4.2',pci:'Req 8.3'}},
+
+  {id:'R10',title:'Excessively Long JWT Token Lifetime',sev:'MEDIUM',cvss:6.8,cat:'A07:Auth Failures',comp:'Auth Service',stride:'Spoofing',
+   pattern:[/token.*expiry.*30.*day/i,/30.*day.*expiry/i,/expiry.*30/i,/no.*refresh.*token/i,/token.*rotation/i,/30 days/i],
+   desc:'30-day JWT tokens without rotation mean stolen tokens remain valid for up to a month after compromise.',
+   exploit:'Attacker steals a JWT from a compromised endpoint log and uses it for 30 days without detection.',
+   rec:'Use 15-minute access tokens with refresh token rotation; implement token revocation list.',
+   effort:'LOW',arch:'identity_access_management',compliance:{owasp:'A07',nist:'Protect',iso:'A.9.4.2',pci:'Req 8.3'}},
+
+  {id:'R11',title:'No WAF on API Gateway',sev:'HIGH',cvss:7.7,cat:'A05:Misconfiguration',comp:'API Gateway (Kong)',stride:'Tampering',
+   pattern:[/no.*waf/i,/without.*waf/i,/waf.*not.*configured/i,/no waf/i,/waf.*not.*enabled/i],
+   desc:'API Gateway without a Web Application Firewall allows OWASP Top 10 attacks to reach backend services unfiltered.',
+   exploit:'Attacker sends SQL injection payloads directly to payment API; no WAF blocks the malformed requests.',
+   rec:'Enable AWS WAF on API Gateway with OWASP Core Rule Set; add rate-based rules; enable managed rule groups.',
+   effort:'LOW',arch:'network_security',compliance:{owasp:'A05',nist:'Protect',iso:'A.13.1.1',pci:'Req 6.4'}},
+
+  {id:'R12',title:'SSN Stored in Plaintext',sev:'CRITICAL',cvss:9.2,cat:'A02:Crypto Failures',comp:'User Service / DB',stride:'Info Disclosure',
+   pattern:[/ssn.*plaintext/i,/plaintext.*ssn/i,/ssn.*plain/i,/social.*security.*plain/i,/ssn.*stored/i],
+   desc:'Social Security Numbers stored in plaintext create maximum PII exposure risk and regulatory violations.',
+   exploit:'Any database read access — from SQL injection, insider, or backup theft — directly exposes SSNs of all users.',
+   rec:'Apply AES-256 field-level encryption to SSN; restrict decryption key access to minimum required services only.',
+   effort:'HIGH',arch:'data_protection',compliance:{owasp:'A02',nist:'Protect',iso:'A.10.1.1',pci:'Req 3.4'}},
+
+  {id:'R13',title:'Admin JWT Shares Secret With User Tokens',sev:'CRITICAL',cvss:9.0,cat:'A01:Broken Access Control',comp:'Auth / Admin Service',stride:'Elevation of Privilege',
+   pattern:[/same.*jwt.*secret/i,/admin.*same.*secret/i,/uses same.*jwt/i,/admin.*user.*same.*secret/i,/same jwt secret/i],
+   desc:'Admin and user tokens signed with the same secret allow privilege escalation by crafting admin-role tokens.',
+   exploit:'Attacker with a valid user token modifies the role claim and re-signs with the shared secret to gain admin access.',
+   rec:'Use separate signing keys per role level; implement asymmetric signing (RS256) for admin tokens.',
+   effort:'LOW',arch:'identity_access_management',compliance:{owasp:'A01',nist:'Protect',iso:'A.9.4.1',pci:'Req 7.1'}},
+
   {id:'R14',title:'No Rate Limiting on Payment Endpoint',sev:'HIGH',cvss:7.5,cat:'A04:Insecure Design',comp:'Payment Service',stride:'DoS',
    pattern:[/no.*rate.*limit/i,/rate.*limit.*not/i,/charge.*no rate limit/i,/without.*rate.*limit/i],
    desc:'Payment endpoint without rate limiting enables brute force and carding attacks.',
