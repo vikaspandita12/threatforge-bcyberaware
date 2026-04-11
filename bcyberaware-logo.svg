@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 370" width="300" height="370">
+  <defs>
+    <linearGradient id="shieldFill" x1="20%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%" stop-color="#1e5aa0"/>
+      <stop offset="100%" stop-color="#0b2040"/>
+    </linearGradient>
+    <linearGradient id="shieldBorder" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2e7ad4"/>
+      <stop offset="100%" stop-color="#1a4a8c"/>
+    </linearGradient>
+    <linearGradient id="irisGrad" x1="20%" y1="10%" x2="80%" y2="90%">
+      <stop offset="0%" stop-color="#7ee8ff"/>
+      <stop offset="40%" stop-color="#22c5ee"/>
+      <stop offset="100%" stop-color="#0077cc"/>
+    </linearGradient>
+    <clipPath id="irisClip">
+      <path d="M68,140 Q150,85 232,140 Q150,195 68,140 Z"/>
+    </clipPath>
+  </defs>
+
+  <!-- ══ SHIELD ══ -->
+  <!-- Outer glow/border layer -->
+  <path d="M150,10 L264,46 C266,88 265,142 252,180 C229,238 193,270 150,290 C107,270 71,238 48,180 C35,142 34,88 36,46 Z"
+        fill="url(#shieldBorder)" opacity="0.35"/>
+
+  <!-- Shield body -->
+  <path d="M150,18 L256,52 C258,91 257,140 245,176 C223,232 189,262 150,281 C111,262 77,232 55,176 C43,140 42,91 44,52 Z"
+        fill="url(#shieldFill)"/>
+
+  <!-- Shield inner border stroke -->
+  <path d="M150,18 L256,52 C258,91 257,140 245,176 C223,232 189,262 150,281 C111,262 77,232 55,176 C43,140 42,91 44,52 Z"
+        fill="none" stroke="#2a6abf" stroke-width="4"/>
+
+  <!-- Shield subtle inner highlight (top-left) -->
+  <path d="M150,18 L85,38 C58,52 42,91 44,52 L150,18 Z"
+        fill="rgba(255,255,255,0.07)"/>
+
+  <!-- ══ B-CURVE ELEMENT (top-right swoosh — the signature BCyberaware mark) ══ -->
+  <!-- Outer stroke -->
+  <path d="M208,26 Q272,58 272,105 Q272,154 218,168"
+        fill="none" stroke="#3a80cc" stroke-width="14" stroke-linecap="round" opacity="0.65"/>
+  <!-- Inner highlight on curve -->
+  <path d="M208,26 Q272,58 272,105 Q272,154 218,168"
+        fill="none" stroke="#6aacf0" stroke-width="6" stroke-linecap="round" opacity="0.45"/>
+
+  <!-- ══ EYE ══ -->
+  <!-- Sclera (white of eye) -->
+  <path d="M68,140 Q150,85 232,140 Q150,195 68,140 Z" fill="white"/>
+
+  <!-- Iris -->
+  <circle cx="150" cy="140" r="46" fill="url(#irisGrad)" clip-path="url(#irisClip)"/>
+
+  <!-- Globe grid lines on iris -->
+  <g clip-path="url(#irisClip)" opacity="0.22">
+    <line x1="68" y1="123" x2="232" y2="123" stroke="white" stroke-width="1"/>
+    <line x1="68" y1="157" x2="232" y2="157" stroke="white" stroke-width="1"/>
+    <ellipse cx="150" cy="140" rx="18" ry="46" fill="none" stroke="white" stroke-width="1"/>
+    <ellipse cx="150" cy="140" rx="36" ry="46" fill="none" stroke="white" stroke-width="1"/>
+    <ellipse cx="150" cy="140" rx="46" ry="16" fill="none" stroke="white" stroke-width="1"/>
+  </g>
+
+  <!-- Pupil / dark center -->
+  <circle cx="150" cy="140" r="21" fill="#071525" clip-path="url(#irisClip)"/>
+
+  <!-- Eye highlight (main) -->
+  <ellipse cx="158" cy="129" rx="10" ry="6" fill="white" opacity="0.82" clip-path="url(#irisClip)"/>
+  <!-- Eye highlight (small secondary) -->
+  <circle cx="165" cy="137" r="3" fill="white" opacity="0.45" clip-path="url(#irisClip)"/>
+
+  <!-- ══ NETWORK / CONNECTIVITY NODES ══ -->
+  <line x1="106" y1="220" x2="150" y2="240" stroke="rgba(255,255,255,0.72)" stroke-width="2.5"/>
+  <line x1="194" y1="220" x2="150" y2="240" stroke="rgba(255,255,255,0.72)" stroke-width="2.5"/>
+  <line x1="106" y1="220" x2="194" y2="220" stroke="rgba(255,255,255,0.72)" stroke-width="2.5"/>
+  <circle cx="106" cy="220" r="5.5" fill="white" opacity="0.9"/>
+  <circle cx="150" cy="240" r="5.5" fill="white" opacity="0.9"/>
+  <circle cx="194" cy="220" r="5.5" fill="white" opacity="0.9"/>
+
+  <!-- ══ TEXT ══ -->
+  <!-- "BCyberaware" -->
+  <text x="150" y="328"
+        font-family="'Segoe UI', 'Arial Black', Arial, sans-serif"
+        font-size="40"
+        font-weight="900"
+        fill="#0d2a54"
+        text-anchor="middle"
+        letter-spacing="-0.5">BCyberaware</text>
+
+  <!-- Decorative line — left -->
+  <line x1="14" y1="347" x2="72" y2="347" stroke="#1976d2" stroke-width="1.8"/>
+
+  <!-- "by VIKAS PANDITA" -->
+  <text x="150" y="352"
+        font-family="'Segoe UI', Arial, sans-serif"
+        font-size="12"
+        font-weight="600"
+        fill="#1976d2"
+        text-anchor="middle"
+        letter-spacing="2.8">by VIKAS PANDITA</text>
+
+  <!-- Decorative line — right -->
+  <line x1="228" y1="347" x2="286" y2="347" stroke="#1976d2" stroke-width="1.8"/>
+</svg>
