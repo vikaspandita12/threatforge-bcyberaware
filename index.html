@@ -992,6 +992,10 @@ function loadDemo() {
   document.getElementById('az-team').value = 'Platform Engineering';
   document.getElementById('az-type').value = 'FinTech / Payment';
   document.getElementById('az-class').value = 'PCI-DSS Sensitive';
+  document.getElementById('az-hld').value = SAMPLE_HLD;
+  document.getElementById('az-lld').value = SAMPLE_LLD;
+  document.getElementById('hld-cnt').textContent = SAMPLE_HLD.length + ' chars';
+  document.getElementById('lld-cnt').textContent = SAMPLE_LLD.length + ' chars';
 }
 
 // Safely attach event listeners only if elements exist
@@ -1036,11 +1040,11 @@ async function runAnalysis() {
       clearInterval(iv);
       currentReport = analyzeDocuments(hld, lld, proj);
       currentReport._meta = { name: proj.name, type: proj.type, classification: proj.classification, team: proj.team, saved: false, hld, lld };
-      setTimeout(async () => {
+      setTimeout(() => {
         renderReportView();
-        await incrementUsage();
         document.getElementById('az-loading').style.display = 'none';
         showView('report');
+        incrementUsage(); // fire-and-forget: don't block UI on Supabase update
       }, 400);
     }
   }, 320);
