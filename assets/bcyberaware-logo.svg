@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="40%" r="75%">
+      <stop offset="0%" stop-color="#0e2355"/>
+      <stop offset="100%" stop-color="#04091a"/>
+    </radialGradient>
+    <linearGradient id="shieldFill" x1="25%" y1="0%" x2="75%" y2="100%">
+      <stop offset="0%" stop-color="#2272ee"/>
+      <stop offset="60%" stop-color="#1050cc"/>
+      <stop offset="100%" stop-color="#0838a0"/>
+    </linearGradient>
+    <linearGradient id="lockFill" x1="20%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%" stop-color="#70c8ff"/>
+      <stop offset="50%" stop-color="#3898f4"/>
+      <stop offset="100%" stop-color="#1870d8"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="lockGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="400" height="400" rx="60" ry="60" fill="url(#bg)"/>
+
+  <!-- Shield outer glow -->
+  <path d="M200 22 L328 68 L328 178 Q322 285 200 342 Q78 285 72 178 L72 68 Z"
+        fill="#1a60ff" opacity="0.25" filter="url(#glow)"/>
+
+  <!-- Shield body -->
+  <path d="M200 30 L318 74 L318 175 Q313 275 200 332 Q87 275 82 175 L82 74 Z"
+        fill="url(#shieldFill)"/>
+
+  <!-- Shield outer rim with cyan glow -->
+  <path d="M200 30 L318 74 L318 175 Q313 275 200 332 Q87 275 82 175 L82 74 Z"
+        fill="none" stroke="#5fc8ff" stroke-width="2.5" opacity="0.7" filter="url(#glow)"/>
+
+  <!-- Shield inner border -->
+  <path d="M200 48 L300 86 L300 172 Q296 262 200 314 Q104 262 100 172 L100 86 Z"
+        fill="none" stroke="rgba(150,210,255,0.3)" stroke-width="1.5"/>
+
+  <!-- Padlock shackle -->
+  <path d="M170 172 L170 140 Q170 104 200 104 Q230 104 230 140 L230 172"
+        fill="none" stroke="url(#lockFill)" stroke-width="20" stroke-linecap="round"
+        filter="url(#lockGlow)"/>
+
+  <!-- Padlock body -->
+  <rect x="155" y="168" width="90" height="78" rx="14" ry="14"
+        fill="url(#lockFill)" filter="url(#lockGlow)"/>
+
+  <!-- Keyhole -->
+  <circle cx="200" cy="200" r="13" fill="#071840"/>
+  <rect x="196" y="200" width="9" height="20" rx="3" fill="#071840"/>
+
+  <!-- BCyberAware wordmark -->
+  <text x="200" y="372" text-anchor="middle"
+        font-family="'Arial Black', Impact, 'Helvetica Neue', sans-serif"
+        font-size="42" font-weight="900">
+    <tspan fill="white">BCyber</tspan><tspan fill="#3da2ff">Aware</tspan>
+  </text>
+
+  <!-- Decorative rule + BY VIKAS PANDITA -->
+  <line x1="52" y1="388" x2="112" y2="388" stroke="#6680a0" stroke-width="1.5"/>
+  <text x="200" y="394" text-anchor="middle"
+        font-family="Arial, Helvetica, sans-serif"
+        font-size="11.5" fill="#6680a0" letter-spacing="2.8">BY VIKAS PANDITA</text>
+  <line x1="288" y1="388" x2="348" y2="388" stroke="#6680a0" stroke-width="1.5"/>
+</svg>
